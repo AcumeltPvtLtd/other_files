@@ -1,0 +1,2 @@
+the file in this repo named config.bin is an First floor router configiuration file 
+IP address as of now is [https://192.168.1.72/]
