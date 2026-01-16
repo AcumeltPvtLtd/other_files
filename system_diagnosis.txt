@@ -1,0 +1,453 @@
+#############################################################
+#              ZEBION H61 HARDWARE DIAGNOSIS               #
+#                 OFFLINE COMPLETE MANUAL                  #
+#              SystemRescue 12.03 (No Internet)            #
+#############################################################
+
+=== CRITICAL NOTE: NO INTERNET REQUIRED ===
+All commands work offline. Package installation skipped.
+All tools pre-installed in SystemRescue 12.03.
+
+##################################################################
+#                     PHASE 0: BEFORE STARTING                   #
+################################################################==
+
+IMPORTANT: Have paper/pen ready to note:
+1. Test start time: __________
+2. Any error messages: ________________
+3. Component serial numbers: ______________
+
+==================================================================
+#                     PHASE 1: BOOTING SYSTEM                    #
+==================================================================
+
+STEP 1: BIOS BOOT (DELETE Key Method)
+--------------------------------------
+1. Plug in SystemRescue USB
+2. Power on computer
+3. PRESS DELETE KEY REPEATEDLY (3x per second)
+4. Blue BIOS screen appears → Use ARROW KEYS
+
+STEP 2: BOOT ORDER SETUP
+------------------------
+Navigation: Arrow Keys, Enter, ESC, F10
+1. Find "Boot" or "Boot Order" menu
+2. Find "Hard Drive BBS Priorities" or similar
+3. Set USB as 1st boot device
+4. F10 → YES → System reboots
+
+STEP 3: SYSTEMRESCUE BOOT MENU (Critical!)
+------------------------------------------
+After reboot, you see TEXT MENU with options:
+
+SELECT THIS: systemrescue (altker64)   [PRESS ENTER]
+
+IF BLANK/STUCK SCREEN:
+1. Wait 2 minutes (first boot slow)
+2. If still stuck, force restart (hold power 5s)
+3. On reboot, in boot menu, press [TAB]
+4. Add to end of line: nomodeset acpi=off
+5. Press ENTER
+
+SUCCESS: You see "root@sysresccd ~ %" prompt
+
+==================================================================
+#                      PHASE 2: RAM DIAGNOSIS                    #
+#                     (FIRST - MOST CRITICAL)                    #
+==================================================================
+
+WHY FIRST: RAM failure causes random crashes, corrupts all tests.
+
+METHOD A: MEMTEST86+ (Most Accurate - 1+ hours)
+------------------------------------------------
+# Reboot to run memtest from boot menu:
+reboot
+# When boot menu appears, select:
+memtest86+ (x86_64)
+
+MEMTEST INTERPRETATION:
+======================
+[PASS COMPLETE, NO ERRORS]     = RAM OK ✓
+[ERRORS IN RED]                = BAD RAM ✗
+
+If errors appear:
+1. NOTE ERROR COUNT: __________
+2. NOTE ERROR ADDRESSES: ______
+3. Press ESC to exit, continue to troubleshooting
+
+METHOD B: QUICK RAM TEST (5 minutes - if pressed for time)
+-----------------------------------------------------------
+# In terminal (after booting to systemrescue):
+memtester 1G 2
+
+INTERPRETATION:
+No errors = RAM likely OK
+Any error = RAM problem
+
+==================================================================
+#                  RAM TEST FAILURE TROUBLESHOOTING             #
+==================================================================
+
+SCENARIO 1: Memtest shows errors immediately
+--------------------------------------------
+ACTION: RAM is definitely faulty
+FIX: Test sticks individually:
+1. Remove all RAM sticks except one
+2. Run memtest again
+3. Repeat for each stick
+4. Replace faulty stick(s)
+
+SCENARIO 2: Memtest fails randomly (intermittent)
+-------------------------------------------------
+POSSIBLE CAUSES:
+1. RAM slot problem → Try different slot
+2. Motherboard memory controller issue
+3. Power supply instability
+
+TEST PROCEDURE:
+1. Test same RAM stick in different slot
+2. If passes in different slot = BAD SLOT
+3. If fails in all slots = BAD RAM
+
+SCENARIO 3: System crashes during memtest
+-----------------------------------------
+POSSIBLE CAUSES:
+1. Overheating RAM (unlikely)
+2. Power supply failing
+3. Motherboard issue
+
+WORKAROUND:
+Run quick test instead:
+memtester 500M 1
+
+==================================================================
+#                      PHASE 3: DRIVE DIAGNOSIS                  #
+#                         (SECOND PRIORITY)                      #
+==================================================================
+
+STEP 1: IDENTIFY DRIVE
+----------------------
+lsblk
+# Shows: sda (HDD) or nvme0n1 (SSD)
+# Note your drive: __________
+
+STEP 2: SMART HEALTH CHECK (2 minutes)
+--------------------------------------
+smartctl -H /dev/sda   # Replace sda with your drive
+
+INTERPRETATION:
+"PASSED" = Drive healthy
+"FAILED" = Drive failing - BACKUP IMMEDIATELY
+
+STEP 3: DETAILED SMART DATA (30 seconds)
+----------------------------------------
+smartctl -A /dev/sda | grep -E "(Raw_Read|Reallocated|Pending|Uncorrectable|Temperature|Power_On)"
+
+CRITICAL VALUES TABLE:
+========================================
+Attribute               | Good Value
+----------------------------------------
+Reallocated_Sector_Ct   | 0
+Current_Pending_Sector  | 0
+Offline_Uncorrectable   | 0
+Temperature_Celsius     | <50°C
+Power_On_Hours          | (Note: High > 30,000)
+========================================
+
+STEP 4: SHORT SELF-TEST (2 minutes)
+-----------------------------------
+smartctl -t short /dev/sda
+# Wait exactly 120 seconds
+smartctl -l selftest /dev/sda
+
+RESULT: "Completed without error" = Good
+        "Failed" = Drive failing
+
+==================================================================
+#                     DRIVE TEST TROUBLESHOOTING                #
+==================================================================
+
+SCENARIO 1: smartctl command not found
+--------------------------------------
+# SystemRescue 12.03 includes smartmontools
+# If missing, use alternative:
+hdparm -I /dev/sda | grep -i "health"
+
+SCENARIO 2: Drive not detected in lsblk
+---------------------------------------
+POSSIBLE CAUSES:
+1. Loose cable → Power off, reseat SATA cable
+2. Dead drive → Try different SATA port
+3. Power issue → Check power cable
+
+DIAGNOSIS:
+dmesg | grep -i "sata\|ahci\|error"
+
+SCENARIO 3: SMART shows warnings but not failures
+-------------------------------------------------
+ACTION: Drive is aging but functional
+BACKUP PLAN: Copy important data NOW
+Monitor these values monthly
+
+==================================================================
+#                      PHASE 4: CPU DIAGNOSIS                   #
+#                         (THIRD PRIORITY)                      #
+==================================================================
+
+STEP 1: BASIC CPU INFO (10 seconds)
+-----------------------------------
+cat /proc/cpuinfo | grep -E "(model name|cpu MHz|cache)"
+
+STEP 2: TEMPERATURE CHECK (Requires setup)
+------------------------------------------
+# Load temperature modules
+modprobe coretemp 2>/dev/null
+modprobe k10temp 2>/dev/null
+
+# Check if sensors work
+sensors 2>/dev/null || echo "Temperature sensors not available"
+
+ALTERNATIVE METHOD (Works on most H61):
+cat /sys/class/thermal/thermal_zone*/temp 2>/dev/null
+# Divide result by 1000 = °C
+# Example: 45000 = 45°C
+
+STEP 3: STRESS TEST (5 minutes)
+-------------------------------
+# Install stress tool (already in SystemRescue)
+stress --cpu $(nproc) --timeout 300s
+
+# Monitor with (in another terminal if possible):
+watch -n 2 "cat /proc/cpuinfo | grep 'cpu MHz'"
+
+EXPECTED BEHAVIOR:
+1. All CPU cores show ~3000 MHz (or your CPU speed)
+2. No system crashes
+3. Temperature < 85°C (if sensors work)
+
+STEP 4: STABILITY CHECK (2 minutes)
+-----------------------------------
+# Math calculation stress
+for i in {1..10000}; do echo "scale=1000; 4*a(1)" | bc -l > /dev/null; done &
+
+# Monitor system responsiveness
+# If system becomes very slow or crashes = CPU/motherboard issue
+
+==================================================================
+#                      CPU TEST TROUBLESHOOTING                 #
+==================================================================
+
+SCENARIO 1: System crashes during stress test
+---------------------------------------------
+POSSIBLE CAUSES:
+1. CPU overheating (clean heatsink, reapply thermal paste)
+2. Power supply insufficient
+3. Motherboard VRM failure (voltage regulation)
+
+TEST: Run with fewer cores:
+stress --cpu 1 --timeout 60s
+# If passes with 1 core but fails with all = Power/VRM issue
+
+SCENARIO 2: No temperature readings
+-----------------------------------
+COMMON ON H61: Old sensors not supported
+WORKAROUND: Physical touch test (CAREFUL!)
+1. Run stress test for 5 minutes
+2. Power off, touch CPU heatsink (not directly!)
+3. Very hot (>60°C) = Cooling working
+4. Cool = Thermal paste/heatsink problem
+
+SCENARIO 3: CPU running at wrong speed
+--------------------------------------
+# Check current vs maximum speed
+cat /proc/cpuinfo | grep "cpu MHz" | head -1
+# Compare to your CPU specs (Google "Intel [your CPU] specifications")
+
+FIX: Enter BIOS, reset to defaults (F5 or Load Defaults)
+
+==================================================================
+#                   MOTHERBOARD DIAGNOSIS                       #
+#                      (FOURTH PRIORITY)                        #
+==================================================================
+
+STEP 1: IDENTIFY MOTHERBOARD (30 seconds)
+-----------------------------------------
+dmidecode -t baseboard 2>/dev/null | grep -E "(Manufacturer|Product|Version|Serial)"
+
+EXPECTED: Manufacturer: Zebion
+         Product Name: H61 chipset motherboard
+
+STEP 2: BIOS INFORMATION (30 seconds)
+-------------------------------------
+dmidecode -t bios 2>/dev/null | grep -E "(Vendor|Version|Release)"
+
+NOTE YOUR BIOS VERSION: ________________
+
+STEP 3: HARDWARE ERROR SCAN (30 seconds)
+----------------------------------------
+dmesg | grep -i "error\|fail\|timeout" | head -10
+
+INTERPRETATION:
+No errors = Good
+ACPI errors = Common on H61, usually harmless
+PCI/device errors = Hardware conflict
+
+STEP 4: POWER SUPPLY CHECK (Indirect)
+-------------------------------------
+# Check if voltages reported (if available)
+dmidecode -t 39 2>/dev/null || echo "No voltage data available"
+
+ALTERNATIVE: Listen for coil whine, check for bulging capacitors
+
+STEP 5: CMOS BATTERY CHECK (Common H61 Issue)
+---------------------------------------------
+SYMPTOMS:
+1. System time wrong on every boot
+2. BIOS settings reset
+3. Boot device order forgotten
+
+FIX: Replace CR2032 battery (¥100-200)
+
+==================================================================
+#                  SYSTEM WIDE QUICK DIAGNOSTIC                 #
+#                     (15 MINUTES TOTAL)                        #
+==================================================================
+
+# COPY AND PASTE THIS ENTIRE BLOCK:
+
+echo "=== H61 QUICK DIAGNOSTIC ===" > /tmp/results.txt
+date >> /tmp/results.txt
+echo "" >> /tmp/results.txt
+echo "=== RAM ===" >> /tmp/results.txt
+free -h >> /tmp/results.txt
+echo "" >> /tmp/results.txt
+echo "=== DRIVE ===" >> /tmp/results.txt
+lsblk >> /tmp/results.txt
+echo "" >> /tmp/results.txt
+echo "=== SMART STATUS ===" >> /tmp/results.txt
+smartctl -H /dev/sda 2>/dev/null | grep "result" >> /tmp/results.txt
+echo "" >> /tmp/results.txt
+echo "=== CPU ===" >> /tmp/results.txt
+cat /proc/cpuinfo | grep "model name" | head -1 >> /tmp/results.txt
+echo "" >> /tmp/results.txt
+echo "=== MOTHERBOARD ===" >> /tmp/results.txt
+dmidecode -t baseboard 2>/dev/null | grep -E "(Manufacturer|Product)" >> /tmp/results.txt
+echo "" >> /tmp/results.txt
+echo "=== ERRORS ===" >> /tmp/results.txt
+dmesg | grep -i "error" | wc -l | xargs echo "Total errors:" >> /tmp/results.txt
+echo "" >> /tmp/results.txt
+echo "=== DIAGNOSTIC COMPLETE ===" >> /tmp/results.txt
+
+# VIEW RESULTS:
+cat /tmp/results.txt
+
+==================================================================
+#                     EMERGENCY TROUBLESHOOTING                 #
+==================================================================
+
+PROBLEM: Can't type commands (keyboard not working)
+FIX: Use different USB port (preferably USB 2.0 - black port)
+
+PROBLEM: Screen goes blank/no signal
+FIX: 
+1. Wait 30 seconds
+2. Press CTRL+ALT+F2 (try F1 through F6)
+3. If terminal appears, continue tests
+4. If not, reboot with: reboot -f
+
+PROBLEM: System completely frozen
+FIX:
+1. Hold power button 5 seconds
+2. Wait 10 seconds
+3. Power on again
+4. In boot menu, add: mem=4G (limits RAM to 4GB)
+
+PROBLEM: USB boot not detected
+FIX:
+1. Try different USB port
+2. In BIOS: Enable "Legacy USB Support"
+3. Disable "Secure Boot" if exists
+4. Set "USB Configuration" to "Enabled"
+
+==================================================================
+#                     SAVING YOUR RESULTS                       #
+==================================================================
+
+OPTION A: Save to another USB drive
+-----------------------------------
+1. Insert second USB drive
+2. Find it: lsblk  (look for sdb or sdc)
+3. Create folder: mkdir /tmp/usb
+4. Mount: mount /dev/sdb1 /tmp/usb
+5. Copy: cp /tmp/results.txt /tmp/usb/
+6. Unmount: umount /tmp/usb
+
+OPTION B: Take photos with phone
+--------------------------------
+1. Display results: cat /tmp/results.txt
+2. Take clear photo
+3. Also photo any error messages
+
+==================================================================
+#                      FINAL DECISION TREE                      #
+==================================================================
+
+QUESTION: Which component is faulty?
+
+IF Memtest shows errors → FAULTY RAM
+IF SMART status FAILED → FAILING DRIVE
+IF CPU stress causes crash → CPU/COOLING/POWER ISSUE
+IF all tests pass but system unstable → MOTHERBOARD
+
+COMMON H61 FAULTS (5+ years old):
+1. CMOS battery dead (¥100 fix)
+2. HDD developing bad sectors (backup!)
+3. RAM slot corrosion (clean with isopropyl alcohol)
+4. Dust clogging heatsinks (clean with air)
+
+==================================================================
+#                      SHUTDOWN PROCEDURE                       #
+==================================================================
+
+SAFE SHUTDOWN:
+1. Stop any running tests: CTRL+C
+2. Sync data: sync
+3. Shutdown: poweroff
+
+FORCE SHUTDOWN (if frozen):
+Hold power button 5 seconds
+
+===============================================================
+#                   NEXT STEPS AFTER DIAGNOSIS                #
+===============================================================
+
+PROBLEM FOUND → ACTION:
+RAM faulty → Test each stick, replace bad ones
+Drive failing → Backup immediately, replace drive
+CPU overheating → Clean heatsink, reapply thermal paste
+Motherboard issue → Consider replacement (H61 boards cheap used)
+
+ALL TESTS PASS → ACTION:
+System is healthy! Consider:
+1. Replacing CMOS battery (preventive)
+2. Cleaning dust from heatsinks
+3. Creating full system backup
+
+===============================================================
+#                        QUICK REFERENCE                       #
+===============================================================
+
+BOOT: DELETE key → Boot menu → systemrescue (altker64)
+RAM: memtest86+ (from boot menu) OR memtester 1G 2
+DRIVE: smartctl -H /dev/sda AND smartctl -A /dev/sda
+CPU: stress --cpu $(nproc) --timeout 300s
+MB: dmidecode -t baseboard AND dmesg | grep -i error
+
+SAVE RESULTS: cat /tmp/results.txt > /dev/sdb1
+SHUTDOWN: poweroff
+FORCE REBOOT: reboot -f
+
+===============================================================
+#                     END OF DIAGNOSTIC GUIDE                 #
+#                     Total Time: 2-24 hours                  #
+===============================================================
