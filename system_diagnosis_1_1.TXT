@@ -1,0 +1,207 @@
+{#############################################################
+#        ZEBION H61 CHIPSET - SURGICAL DIAGNOSIS MANUAL      #
+#           TARGET: INTEL H61 / SOCKET 1155 (Legacy)         #
+#            TOOL: SystemRescue 12.03 (Offline Mode)         #
+#############################################################
+
+=== PRE-FLIGHT VISUAL INSPECTION (SAVE 2 HOURS) ===
+Before booting, inspect the motherboard physically.
+1. CAPACITORS: Look at the cylinders near the CPU socket.
+   - Flat tops = OK.
+   - Bulging/Crusty Brown tops = DEAD BOARD. (Stop immediately).
+2. PORTS: Use the REAR BLACK USB PORTS (USB 2.0). 
+   - Avoid Blue USB 3.0 ports during boot (Zebion H61 controllers often fail without OS drivers).
+
+==================================================================
+#               PHASE 1: THE "SURGICAL" BOOT                     #
+==================================================================
+
+OBJECTIVE: Bypass BIOS setup to save time. Force safe graphics.
+
+STEP 1: THE "F-KEY" METHOD (Faster than DEL)
+1. Insert USB into REAR BLACK PORT.
+2. Power On.
+3. Immediately tap [F11] or [F12] repeatedly (Boot Menu).
+   - If that fails, restart and tap [ESC].
+4. Select "USB Device" / "VendorCo ProductCode".
+
+STEP 2: KERNEL PARAMETERS (CRITICAL FOR H61 GRAPHICS)
+The Intel HD 2000/2500 graphics on H61 CPUs often hang Linux.
+1. Highlight "SystemRescue".
+2. Press [E] or [TAB] to edit.
+3. Add this to the end of the line:
+   nomodeset i915.modeset=0 acpi_osi=Linux
+4. Press [ENTER].
+
+SUCCESS = You see "root@sysresccd".
+
+==================================================================
+#            PHASE 2: THE "5-MINUTE TRIAGE" (ADVANCED)           #
+#           (Do this first. Catches 90% of hardware faults)      #
+==================================================================
+
+Run these 3 commands immediately to check kernel logs.
+
+COMMAND 1: CHECK HARDWARE "PANIC" LOGS
+dmesg --level=emerg,alert,crit,err
+
+INTERPRETATION:
+- "MCE: Hardware Error" = DYING CPU.
+- "SATA link down" / "UNC error" = BAD DRIVE or CABLE.
+- "USB disconnect" looping = BAD 5V RAIL (PSU).
+
+COMMAND 2: CHECK MEMORY CONTROLLER (EDAC)
+grep -i "edac" /var/log/dmesg
+
+INTERPRETATION:
+- Any output here indicates the CPU memory controller detected RAM noise.
+- If output exists: Reseat RAM.
+
+COMMAND 3: THERMAL SENSOR CHECK
+sensors 2>/dev/null || grep . /sys/class/thermal/thermal_zone*/temp
+
+INTERPRETATION:
+- If < 30000 (30°C) immediately: Sensor is likely fake/broken (Common on Zebion).
+- If > 80000 (80°C) idle: CPU Cooler is detached.
+
+==================================================================
+#            PHASE 3: MEMORY & CPU (PARALLEL STRESS)             #
+#            Technique: "Userspace Load" (Time: 5 Mins)          #
+==================================================================
+
+Instead of Memtest86+ (1 hour), we use `stress-ng` to hit the RAM and Memory Controller simultaneously inside the OS.
+
+STEP 1: CALCULATE SAFE RAM LIMIT
+free -m
+(Note the "available" number. Subtract 500. Example: If 3800, use 3300M).
+
+STEP 2: EXECUTE "MATRICES" TEST
+(This tests CPU math + RAM read/write + VRM voltage stability).
+
+stress-ng --matrix 0 --matrix-size 64 --vm 2 --vm-bytes 1G --timeout 180s --metrics-brief
+
+EXCEPTION HANDLER (WHAT HAPPENS?):
+1. SYSTEM FREEZES/REBOOTS:
+   - Immediate Reboot = WEAK PSU or VRM (Motherboard voltage regulator).
+   - Freeze = BAD RAM or UNSTABLE OVERCLOCK.
+2. COMMAND FAILS WITH "FAIL" MESSAGE:
+   - CPU Calculation Error.
+
+STEP 3: ISOLATED RAM TEST (Only if Step 2 failed)
+memtester 1G 1
+
+==================================================================
+#               PHASE 4: STORAGE PRECISION CHECK                 #
+#              (Focus on Cables vs. Drive Mechanics)             #
+==================================================================
+
+Most "Drive Failures" on H61 are actually bad SATA cables (red cables).
+
+STEP 1: IDENTIFY
+lsblk -d -o NAME,MODEL,ROTA
+(ROTA: 1=HDD, 0=SSD)
+
+STEP 2: THE "CRC" CHECK (CABLE DIAGNOSIS)
+smartctl -A /dev/sda | grep -E "(199|UDMA_CRC)"
+
+INTERPRETATION:
+- RAW_VALUE > 0: The SATA Cable is bad. The drive might be fine.
+- ACTION: Change cable before replacing drive.
+
+STEP 3: THE "MECHANICAL" CHECK (HDD ONLY)
+smartctl -A /dev/sda | grep -E "(5|197|198|Reallocated|Pending)"
+
+INTERPRETATION:
+- Any non-zero value here = PHYSICAL DAMAGE.
+- ACTION: Replace Drive.
+
+STEP 4: NVME/SSD HEALTH (IF EQUIPPED)
+smartctl -A /dev/sda | grep "Media_Wear"
+
+==================================================================
+#           PHASE 5: MOTHERBOARD BUS DIAGNOSIS                   #
+#             (PCIe Slots, USB, and Ethernet)                    #
+==================================================================
+
+Zebion H61 boards often have failing PCIe lanes or Network chips.
+
+STEP 1: PCI BUS ERROR SCAN
+lspci -vvv 2>/dev/null | grep -i "UESta"
+
+INTERPRETATION:
+- "UESta: +" (Uncorrectable Error Status).
+- If seen near "Realtek" or "Ethernet" = Dead LAN port.
+- If seen near "VGA" = Dead GPU or PCIe slot.
+
+STEP 2: USB POWER CHECK
+lsusb -v 2>/dev/null | grep -i "MaxPower"
+
+- Look for devices claiming 500mA.
+- If mouse/keyboard disconnect intermittently, the H61 5V rail is sagging.
+
+==================================================================
+#               AUTOMATED REPORT GENERATOR (COPY-PASTE)          #
+#                 (Creates a clean log file instantly)           #
+==================================================================
+
+cat << 'EOF' > /tmp/zebion_report.txt
+===================================================
+ZEBION H61 HARDWARE AUTO-DIAGNOSIS REPORT
+Date: $(date)
+===================================================
+[1] KERNEL ERRORS (CRITICAL):
+$(dmesg --level=emerg,alert,crit,err | tail -n 10)
+
+[2] CPU INFO:
+$(lscpu | grep -E "Model name|MHz")
+
+[3] RAM STATUS (OS LEVEL):
+$(free -h)
+
+[4] STORAGE HEALTH (SMART):
+$(smartctl -H /dev/sda 2>/dev/null | grep result)
+CABLE ERRORS (UDMA): $(smartctl -A /dev/sda 2>/dev/null | grep 199 | awk '{print $10}')
+
+[5] MOTHERBOARD INFO:
+$(dmidecode -t baseboard | grep -E "Product|Serial")
+
+[6] THERMALS:
+$(cat /sys/class/thermal/thermal_zone*/temp 2>/dev/null | awk '{print $1/1000 " C"}')
+===================================================
+EOF
+cat /tmp/zebion_report.txt
+
+==================================================================
+#                 DECISION MATRIX (THE "FIX IT" GUIDE)           #
+==================================================================
+
+SYMPTOM: Time resets to 2012/2013 on boot.
+> DIAGNOSIS: Dead CR2032 Battery.
+> IMPACT: Causes "Checksum Error" and boot loops on H61.
+> FIX: Replace battery (Priority 1).
+
+SYMPTOM: "UDMA CRC Error" in SMART test.
+> DIAGNOSIS: Bad SATA Cable (Very common on old builds).
+> FIX: Replace red SATA cable with a new one.
+
+SYMPTOM: System rebooted during `stress-ng`.
+> DIAGNOSIS: Power Supply (PSU) or VRM Overheat.
+> TEST: Touch the black cubes near CPU (VRMs). If burns finger instantly, add a fan.
+
+SYMPTOM: No Sound / No LAN.
+> DIAGNOSIS: H61 Southbridge failing.
+> FIX: Add USB Sound Card / USB WiFi adapter (Cheaper than new board).
+
+==================================================================
+#                     SAVING RESULTS OFFLINE                     #
+==================================================================
+
+1. Insert a second USB stick.
+2. Run: lsblk (Identify it, e.g., sdb1).
+3. mkdir /mnt/usb
+4. mount /dev/sdb1 /mnt/usb
+5. cp /tmp/zebion_report.txt /mnt/usb/
+6. umount /mnt/usb
+7. echo "LOG SAVED. SAFE TO SHUTDOWN."
+
+==================================================================
