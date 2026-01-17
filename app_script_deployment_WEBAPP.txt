@@ -1,0 +1,9 @@
+Deployment successfully updated.
+Version 1 on Jan 17, 2026, 1:11 PM
+
+Deployment ID =[AKfycbyvqexyjIp1AAQgdUYidC5rsENeovwfCbBjGDwJQXw6f8ND0AJA4T5PEGAaBD-sLTHN]
+
+Web app URL
+{
+https://script.google.com/a/macros/acumelt.com/s/AKfycbyvqexyjIp1AAQgdUYidC5rsENeovwfCbBjGDwJQXw6f8ND0AJA4T5PEGAaBD-sLTHN/exec
+}
