@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAN Server Finder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .error {
+            color: #e74c3c;
+            margin-top: 1rem;
+        }
+        .note {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🔍 Looking for Server on Port 8081</h2>
+        <div class="spinner"></div>
+        <p id="status">Checking myserver.local...</p>
+        <div id="error" class="error"></div>
+        <div class="note">
+            First checks <strong>myserver.local:8081</strong>, then scans<br>
+            <strong>192.168.1.1 - 192.168.1.254:8081</strong>.<br>
+            You'll be redirected to the first responsive server.
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const statusEl = document.getElementById('status');
+            const errorEl = document.getElementById('error');
+
+            // List of URLs to try: myserver.local + all IPs in 192.168.1.1/24
+            const urls = ['http://myserver.local:8081'];
+            for (let i = 1; i <= 254; i++) {
+                urls.push(`http://192.168.1.${i}:8081`);
+            }
+
+            // Maximum concurrent requests (adjust if needed)
+            const MAX_CONCURRENT = 20;
+            // Timeout per request (ms)
+            const TIMEOUT = 3000;
+
+            /**
+             * Returns a promise that resolves with the first successful URL.
+             * Uses fetch in 'no-cors' mode to test reachability without CORS issues.
+             */
+            function findFirstServer(urlList, maxConcurrent, timeoutMs) {
+                return new Promise((resolve, reject) => {
+                    const queue = [...urlList];
+                    const controllers = new Set(); // track active AbortControllers
+                    let active = 0;
+                    let found = false;
+
+                    function processNext() {
+                        // If already found, stop starting new requests
+                        if (found) return;
+
+                        // Start new requests while under concurrency limit and queue not empty
+                        while (active < maxConcurrent && queue.length > 0 && !found) {
+                            const url = queue.shift();
+                            active++;
+
+                            const controller = new AbortController();
+                            controllers.add(controller);
+                            const signal = controller.signal;
+
+                            // Timeout: abort this request if it takes too long
+                            const timeoutId = setTimeout(() => {
+                                controller.abort();
+                                controllers.delete(controller);
+                            }, timeoutMs);
+
+                            fetch(url, { mode: 'no-cors', signal })
+                                .then(() => {
+                                    if (!found) {
+                                        found = true;
+                                        resolve(url); // first success!
+                                        // Abort all other pending requests
+                                        controllers.forEach(c => c.abort());
+                                        controllers.clear();
+                                    }
+                                })
+                                .catch(() => {
+                                    // Request failed (host down, port closed, timeout, etc.) – ignore
+                                })
+                                .finally(() => {
+                                    clearTimeout(timeoutId);
+                                    controllers.delete(controller);
+                                    active--;
+                                    if (!found) processNext(); // continue with next in queue
+                                });
+                        }
+
+                        // If nothing is active and queue is empty, reject
+                        if (active === 0 && queue.length === 0 && !found) {
+                            reject(new Error('No server found on port 8081'));
+                        }
+                    }
+
+                    processNext();
+                });
+            }
+
+            // Start the search
+            statusEl.textContent = 'Scanning... (this may take up to 30 seconds)';
+            findFirstServer(urls, MAX_CONCURRENT, TIMEOUT)
+                .then(serverUrl => {
+                    statusEl.textContent = `Found server at ${serverUrl}, redirecting...`;
+                    window.location.href = serverUrl; // load the page from that server
+                })
+                .catch(error => {
+                    statusEl.style.display = 'none';
+                    errorEl.textContent = '❌ No server with port 8081 found on the local network.';
+                    console.error(error);
+                });
+        })();
+    </script>
+</body>
+</html>
