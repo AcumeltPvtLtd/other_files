@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casting mold – with colored safety cube & top holes</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        #info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(10, 10, 20, 0.85);
+            color: white;
+            padding: 14px 22px;
+            border-radius: 12px;
+            backdrop-filter: blur(6px);
+            border-left: 6px solid #ffaa00;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            z-index: 100;
+            pointer-events: none;
+            font-size: 15px;
+            line-height: 1.5;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        #info strong {
+            color: #ffaa00;
+        }
+        #info span {
+            color: #00ffaa;
+        }
+        .note {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            color: #ddd;
+            background: rgba(20,20,30,0.8);
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 14px;
+            backdrop-filter: blur(4px);
+            border: 1px solid #444;
+            z-index: 100;
+        }
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: #eee;
+            background: rgba(0,0,0,0.5);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            backdrop-filter: blur(2px);
+            border-left: 4px solid #00ff00;
+        }
+        /* CSS2D labels styling */
+        .css-label {
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            background: rgba(10, 15, 20, 0.85);
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid #555;
+            backdrop-filter: blur(4px);
+            pointer-events: none;
+            letter-spacing: 0.5px;
+        }
+        .lbl-x { border-left: 3px solid #ff0000; }
+        .lbl-y { border-left: 3px solid #00ff00; }
+        .lbl-z { border-left: 3px solid #0066ff; }
+    </style>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="info">
+        <strong>🏭 CASTING MOLD with SAFETY CUBE</strong> 508×660×500 mm<br>
+        <span style="color:#ff8800;">🟧 Safety cube (orange)</span> 408×560×350 mm (centered at Y=245)<br>
+        <span style="color:#ff0000;">🔴 X edge</span> <span style="color:#00ff00;">🟢 Y edge</span> <span style="color:#0066ff;">🔵 Z edge</span> with dimension labels<br>
+        <span>➖ Parting line (orange) at Y = 250 mm</span><br>
+        🔴 Top holes Ø50 mm at (0,0), (160,0), (0,235), (160,235) relative to top center
+    </div>
+    <div class="legend">
+        ⬤ <span style="color:#ff5555;">Red discs</span> = holes on top face (Y=500)
+    </div>
+    <div class="note">🖱️ Drag to orbit · Scroll to zoom</div>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+        // --- Setup scene, camera, renderer ---
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x1a1a1a);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 5000);
+        camera.position.set(800, 400, 800);
+        camera.lookAt(0, 250, 0);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+
+        // CSS2 renderer for labels
+        const labelRenderer = new CSS2DRenderer();
+        labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        labelRenderer.domElement.style.position = 'absolute';
+        labelRenderer.domElement.style.top = '0';
+        labelRenderer.domElement.style.pointerEvents = 'none';
+        document.body.appendChild(labelRenderer.domElement);
+
+        // --- Controls ---
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.target.set(0, 250, 0);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.screenSpacePanning = true;
+        controls.maxPolarAngle = Math.PI / 2;
+
+        // --- Lighting ---
+        const ambientLight = new THREE.AmbientLight(0x404060);
+        scene.add(ambientLight);
+
+        const dirLight1 = new THREE.DirectionalLight(0xffeedd, 1.2);
+        dirLight1.position.set(500, 800, 600);
+        scene.add(dirLight1);
+
+        const dirLight2 = new THREE.DirectionalLight(0xccddff, 0.6);
+        dirLight2.position.set(-400, 300, -500);
+        scene.add(dirLight2);
+
+        const backLight = new THREE.DirectionalLight(0xffffff, 0.4);
+        backLight.position.set(0, 200, -800);
+        scene.add(backLight);
+
+        // --- Visual aids ---
+        const gridHelper = new THREE.GridHelper(0, 0, 0xaaaaaa, 0x555555);
+        gridHelper.position.y = 0;
+        scene.add(gridHelper);
+
+        const axesHelper = new THREE.AxesHelper(2);
+        scene.add(axesHelper);
+
+        // ========== MOLD OUTER BOX ==========
+        const outerW = 508, outerD = 660, outerH = 500;
+        const outerGeo = new THREE.BoxGeometry(outerW, outerH, outerD);
+        const outerMat = new THREE.MeshPhongMaterial({
+            color: 0x888888,
+            transparent: true,
+            opacity: 0.2,
+            side: THREE.DoubleSide,
+            depthWrite: false // <--- ADD THIS LINE
+        });
+        const outerMesh = new THREE.Mesh(outerGeo, outerMat);
+        outerMesh.position.set(0, outerH / 2, 0);
+        scene.add(outerMesh);
+
+        const outerEdges = new THREE.EdgesGeometry(outerGeo);
+        const outerLines = new THREE.LineSegments(outerEdges, new THREE.LineBasicMaterial({ color: 0xffffff }));
+        outerLines.position.copy(outerMesh.position);
+        scene.add(outerLines);
+
+        // ========== COLORED SAFETY CUBE ==========
+        const safeW = 408, safeH = 350, safeD = 560, safeCenterY = 245;
+        const safeGeo = new THREE.BoxGeometry(safeW, safeH, safeD);
+
+        function createColoredCubeWireframe(boxGeo) {
+            const group = new THREE.Group();
+            const edges = new THREE.EdgesGeometry(boxGeo);
+            const pos = edges.attributes.position.array;
+            const sw = safeW / 2, sh = safeH / 2, sd = safeD / 2;
+            const stickGeo = new THREE.CylinderGeometry(1.0, 1.0, 1, 5);
+            stickGeo.translate(0, 0.5, 0);
+            stickGeo.rotateX(Math.PI / 2);
+
+            const isMatch = (v1, v2, p1, p2) => (v1.distanceTo(p1) < 0.1 && v2.distanceTo(p2) < 0.1) || (v1.distanceTo(p2) < 0.1 && v2.distanceTo(p1) < 0.1);
+
+            for (let i = 0; i < pos.length; i += 6) {
+                const sV = new THREE.Vector3(pos[i], pos[i+1], pos[i+2]), eV = new THREE.Vector3(pos[i+3], pos[i+4], pos[i+5]);
+                let c = 0xff8800, txt = null, cls = "";
+                if (isMatch(sV, eV, new THREE.Vector3(-sw, -sh, sd), new THREE.Vector3(sw, -sh, sd))) { c = 0xff0000; txt = "W: 408mm"; cls = "lbl-x"; }
+                else if (isMatch(sV, eV, new THREE.Vector3(-sw, -sh, sd), new THREE.Vector3(-sw, sh, sd))) { c = 0x00ff00; txt = "H: 350mm"; cls = "lbl-y"; }
+                else if (isMatch(sV, eV, new THREE.Vector3(-sw, -sh, -sd), new THREE.Vector3(-sw, -sh, sd))) { c = 0x0066ff; txt = "L: 560mm"; cls = "lbl-z"; }
+                
+                const m = new THREE.Mesh(stickGeo, new THREE.MeshBasicMaterial({ color: c }));
+                m.position.copy(sV); m.lookAt(eV); m.scale.z = sV.distanceTo(eV); group.add(m);
+                if (txt) {
+                    const d = document.createElement('div'); d.className = 'css-label ' + cls; d.textContent = txt;
+                    const l = new CSS2DObject(d); l.position.copy(sV).lerp(eV, 0.5); group.add(l);
+                }
+            }
+            return group;
+        }
+
+        const safeCubeGroup = createColoredCubeWireframe(safeGeo);
+        safeCubeGroup.position.y = safeCenterY;
+        scene.add(safeCubeGroup);
+
+        // ========== PARTING LINE (orange, at Y=250) based on example code ==========
+
+        // 1. Create parting plane mesh (surface) with example properties
+        const partPlaneSurfaceMat = new THREE.MeshBasicMaterial({
+            color: 0xff8800,
+            transparent: true,
+            opacity: 0.3, // Example opacity value (adjust for preference)
+            side: THREE.DoubleSide,
+            depthWrite: false
+        });
+        const partingSurfaceGeo = new THREE.PlaneGeometry(outerW, outerD);
+        partingSurfaceGeo.rotateX(-Math.PI / 2); // Lay flat
+        const dividingSurfaceSliceSystem = new THREE.Mesh(partingSurfaceGeo, partPlaneSurfaceMat);
+        dividingSurfaceSliceSystem.position.y = 250; 
+        scene.add(dividingSurfaceSliceSystem);
+
+        // 2. Create parting wireframe boundary using example logic
+        const loopVertices = [
+            new THREE.Vector3(-outerW / 2, 0, -outerD / 2),
+            new THREE.Vector3(outerW / 2, 0, -outerD / 2),
+            new THREE.Vector3(outerW / 2, 0, outerD / 2),
+            new THREE.Vector3(-outerW / 2, 0, outerD / 2)
+        ];
+        loopVertices.push(loopVertices[0]); // Close loop
+
+        const partPlaneBorderMat = new THREE.LineBasicMaterial({
+            color: 0xff8800,
+            linewidth: 8 // Line width from example code, might vary in browser depending on implementation.
+        });
+        const separatingShearWireBounds = new THREE.Line(new THREE.BufferGeometry().setFromPoints(loopVertices), partPlaneBorderMat);
+        separatingShearWireBounds.position.y = 250; 
+        scene.add(separatingShearWireBounds);
+
+        // ========== TOP HOLES ==========
+        const holeGeo = new THREE.CylinderGeometry(26, 26, 5, 50);
+        const holeMat = new THREE.MeshBasicMaterial({ color: 0xff9000 }); 
+        const topY = 500 + 0.5;
+        [{ x: 0, z: 0 }, { x: 160, z: 0 }, { x: 0, z: 235 }, { x: 160, z: 235 }].forEach(pos => {
+            const h = new THREE.Mesh(holeGeo, holeMat);
+            h.position.set(pos.x, topY, pos.z);
+            scene.add(h);
+        });
+
+        // Loop
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+            labelRenderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
