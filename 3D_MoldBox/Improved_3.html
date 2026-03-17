@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Metal Casting Mold – Complete Exploration Tool</title>
+    <style>
+        :root {
+            --primary: #ff6600;
+            --bg-glass: rgba(10, 15, 20, 0.7);
+            --border: rgba(255, 102, 0, 0.3);
+            --text-glow: 0 0 10px rgba(255, 102, 0, 0.5);
+        }
+
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0b0c10;
+        }
+
+        .panel-container {
+            position: absolute;
+            background: var(--bg-glass);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-left: 4px solid var(--primary);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        #main-info {
+            top: 20px;
+            left: 20px;
+        }
+
+        #main-info h1 {
+            margin: 0 0 5px;
+            font-size: 1.4rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #ffffff;
+            text-shadow: var(--text-glow);
+        }
+
+        #main-info p { margin: 0; font-size: 0.85rem; color: #aaa; }
+
+        /* Foundry Live Metrics HUD */
+        #metrics-hud {
+            top: 100px;
+            left: 20px;
+            width: 250px;
+            border-left-color: #00ccff;
+        }
+
+        .metric-block {
+            margin-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 5px;
+        }
+
+        .metric-block:last-child { border-bottom: none; margin-bottom: 0; }
+        .metric-title { font-size: 0.7rem; text-transform: uppercase; color: #88c0d0; font-weight: bold; }
+        .metric-value { font-size: 1.3rem; font-weight: bold; margin-top: 3px; display: flex; justify-content: space-between; align-items: flex-end;}
+        .metric-sub { font-size: 0.8rem; color: #a3be8c; }
+        .alert-color { color: #bf616a; }
+        
+        #legend {
+            bottom: 30px;
+            left: 20px;
+            line-height: 1.6;
+        }
+
+        .legend-item { display: flex; align-items: center; margin: 8px 0; font-size: 0.85rem;}
+        .color-box { width: 16px; height: 16px; margin-right: 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.4); }
+
+        .css2d-dimension-label {
+            color: white;
+            font-size: 20px;
+            font-weight: 800;
+            background: rgba(15, 15, 15, 0.75);
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid #777;
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 0 10px rgba(0,0,0,1);
+            backdrop-filter: blur(4px);
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+            user-select: none;
+            transition: opacity 0.3s;
+        }
+        
+        .loading {
+            position: fixed;
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            color: #fff; font-size: 1.5rem; font-weight: bold; font-family: sans-serif;
+            pointer-events: none; transition: opacity 0.5s; z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div id="loader" class="loading">Loading Engineering Viz System...</div>
+
+    <!-- UI Overlay elements -->
+    <div id="main-info" class="panel-container">
+        <h1>🏭 Virtual Metal Casting Workbench</h1>
+        <p>Interactive Cop & Drag Sandbox Environment</p>
+    </div>
+
+    <!-- Analytics Dashboard for robust volumetric and weights evaluation -->
+    <div id="metrics-hud" class="panel-container">
+        <div class="metric-block">
+            <div class="metric-title">TOTAL FLASK VOLUME</div>
+            <div class="metric-value"><span id="metric-outer-vol">666.6 L</span></div>
+        </div>
+        <div class="metric-block">
+            <div class="metric-title">CASTABLE VOLUME CAP.</div>
+            <div class="metric-value" style="color:var(--primary)"><span id="metric-inner-vol">79.9 L</span></div>
+        </div>
+        <div class="metric-block">
+            <div class="metric-title">MOLD SAND ESTIMATE (Silica)</div>
+            <div class="metric-value"><span id="metric-sand-kg">131.4 kg</span><span class="metric-sub alert-color">Total Load</span></div>
+        </div>
+        <div class="metric-block">
+            <div class="metric-title">POTENTIAL PART MASS (IRON / AL)</div>
+            <div class="metric-value"><span id="metric-fe-kg">575.8 kg</span><span class="metric-sub">/ <span id="metric-al-kg">215.9 kg</span></span></div>
+        </div>
+    </div>
+
+    <div id="legend" class="panel-container">
+        <div style="margin-bottom: 8px; font-weight: bold; color: var(--primary);">VISUAL DIRECTORY 📌</div>
+        <div class="legend-item"><div class="color-box" style="background: rgba(180,170,160,0.25); border: 2px solid black;"></div> Mold (Cope=Top, Drag=Bot)</div>
+        <div class="legend-item"><div class="color-box" style="background: transparent; border: 2px solid #ccc;"></div> Maximum Safe Bounding Limits</div>
+        <div class="legend-item"><div class="color-box" style="background: rgba(255,102,0,0.4); border: 1px solid #f60;"></div> Horizontal Parting Shear Line</div>
+        <div class="legend-item"><div class="color-box" style="background: #f60;"></div> Gating Mechanics / Cast Sprue Cups</div>
+        <div class="legend-item"><span style="margin-right:8px; width:16px;">🔥</span> Cast Simulate Flow Zone / Volumetric Indicator</div>
+    </div>
+
+    <!-- Importmap allowing clean dependencies including three, GUI handlers, and addons -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/",
+                "lil-gui": "https://cdn.jsdelivr.net/npm/lil-gui@0.19/+esm"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+        import GUI from 'lil-gui';
+
+        document.getElementById('loader').style.opacity = '0';
+
+        // Globals Base Configurations Set EXACTLY from specific mathematical constraints.
+        const C = {
+            O_W: 508, O_H: 500, O_D: 660,     // Total Box Size 
+            S_W: 408, S_H: 350, S_D: 560,     // Exact Safe Zone Extents Request
+            Y_PRT: 250,                       // Mold mid-section Parting plane point
+            S_C_Y: 245                        // True mathematical center constraint mappings 
+        };
+
+        const SP_CUPS =[{x: 0, z: 0}, {x: 160, z: 0}, {x: 0, z: 235}, {x: 160, z: 235}];
+
+        // Variables state controlled externally
+        let sim = { 
+            explodeHeight: 0, pouringSimState: 0, visibleMold: true, 
+            visibleGuides: true, viewXRaySafeZ: false,
+        };
+
+        // References to Objects
+        const cacheObj = {};
+        
+        // --- 1. Framework Initialize ---
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x0a0c12, 0.0004); // subtle fade on grid extremes
+
+        const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 10, 8000);
+        camera.position.set(1300, 800, 1100);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, logarithmicDepthBuffer: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        document.body.appendChild(renderer.domElement);
+
+        const cssRenderer = new CSS2DRenderer();
+        cssRenderer.setSize(window.innerWidth, window.innerHeight);
+        cssRenderer.domElement.style.position = 'absolute';
+        cssRenderer.domElement.style.top = '0';
+        cssRenderer.domElement.style.pointerEvents = 'none';
+        document.body.appendChild(cssRenderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true; 
+        controls.dampingFactor = 0.06;
+        controls.maxPolarAngle = Math.PI / 1.8;
+        controls.target.set(0, C.Y_PRT, 0);
+
+        // -- Illuminance Configured for Material Fidelity --
+        const addLight = (color, intensity, px, py, pz) => {
+            const lit = new THREE.DirectionalLight(color, intensity);
+            lit.position.set(px, py, pz);
+            scene.add(lit);
+            return lit;
+        };
+        scene.add(new THREE.AmbientLight(0x222a36, 1));
+        addLight(0xfff7ea, 0.9, 1000, 1500, 1000); // Key Warm Light Top Front Right
+        addLight(0xa5c6ff, 0.5, -800, 500, -800);  // Back blue fill 
+        const castLight = new THREE.PointLight(0xff8c00, 0, 800); // Inner fiery logic point bound for Cast anim effect
+        scene.add(castLight);
+        
+        // Base Foundation Visual Anchor Helper Floor
+        const pGrid = new THREE.GridHelper(1600, 32, 0x484852, 0x1f2229);
+        pGrid.position.set(0,-1,0); 
+        scene.add(pGrid);
+
+        // -------- Assembly of Parts (COPE & DRAG STRUCTURE Architecture) ------- //
+        
+        // Create grouping containers natively supporting real Cope (Top part lift logic) Separability interactions
+        cacheObj.groupMain   = new THREE.Group(); scene.add(cacheObj.groupMain);
+        cacheObj.groupCope   = new THREE.Group(); cacheObj.groupMain.add(cacheObj.groupCope); 
+        cacheObj.groupDrag   = new THREE.Group(); cacheObj.groupMain.add(cacheObj.groupDrag); 
+        cacheObj.groupArrows = new THREE.Group(); scene.add(cacheObj.groupArrows); 
+
+        cacheObj.groupCope.position.y = C.Y_PRT; // Scope Base begins relative here Y: 250  
+        cacheObj.groupDrag.position.y = 0;
+
+        // Custom sand-cast resin hybrid styling formulation.
+        const sandMoldMat = new THREE.MeshPhysicalMaterial({
+            color: 0x988a7a,
+            metalness: 0.1, roughness: 0.95,
+            transparent: true, opacity: 0.22,
+            transmission: 0.5, side: THREE.DoubleSide
+        });
+
+        // 2A - Base Geometry Building Macro 
+        const forgeBoxOutline = (parent, hStartBoxRelativeEdgeLocalPivotEdgeLogicOnlyBoxEdgeHelper , isCopeTopBool, colorStyleEdgesMode) => { 
+            const boxGeo = new THREE.BoxGeometry(C.O_W, C.O_H / 2, C.O_D);
+            // Pivot from local bottom corner explicitly 
+            boxGeo.translate(0, C.O_H / 4, 0);
+            
+            const outerObj = new THREE.Mesh(boxGeo, sandMoldMat);
+            
+            const linG  = new THREE.EdgesGeometry(boxGeo);
+            const edgeMatLines = new THREE.LineSegments(linG, new THREE.LineBasicMaterial({ color: colorStyleEdgesMode }));
+            
+            parent.add(outerObj, edgeMatLines);
+            return outerObj; 
+        };
+
+        // DRAG Creation Lower Assembly logic H= 250 base relative to grid Y=0
+        cacheObj.dragSectionMesh = forgeBoxOutline(cacheObj.groupDrag, 0, false, 0x000000); 
+
+        // COPE Creation Upper Assembly Y Offset automatically relative starting +250 by main parent matrix 
+        cacheObj.copeSectionMesh = forgeBoxOutline(cacheObj.groupCope, 0, true,  0x000000);
+        
+        // PARTING LINE VISUAL Horizontal Plane logic Y 250 fixed upon Drag parent surface anchor
+        const ptpGeo = new THREE.PlaneGeometry(C.O_W, C.O_D);
+        ptpGeo.rotateX(-Math.PI / 2);
+        
+        cacheObj.prtPnlMesh = new THREE.Mesh(ptpGeo, new THREE.MeshBasicMaterial({color: 0xff6600, transparent: true, opacity: 0.35, side: THREE.DoubleSide}));
+        const prtLinesGeoOuterBoundLimitPts = [[-C.O_W/2,-C.O_D/2],[C.O_W/2,-C.O_D/2], [C.O_W/2,C.O_D/2],[-C.O_W/2,C.O_D/2] ];
+        const lnsVector = prtLinesGeoOuterBoundLimitPts.map(e=> new THREE.Vector3(e[0],0,e[1])); lnsVector.push(lnsVector[0]); // closed polygon edge draw shape manually
+        cacheObj.prtEdgeMesh  = new THREE.Line(new THREE.BufferGeometry().setFromPoints(lnsVector), new THREE.LineBasicMaterial({ color: 0xff6600, linewidth:2 }));
+
+        cacheObj.groupDrag.add(cacheObj.prtPnlMesh); 
+        cacheObj.groupDrag.add(cacheObj.prtEdgeMesh);
+        // Bind locally top surface. relative pos logic:
+        cacheObj.prtPnlMesh.position.y = C.O_H / 2; // Y:250 relative to DRAG Bottom Ground Floor Zero Anchor Frame Base!
+        cacheObj.prtEdgeMesh.position.y = C.O_H / 2;
+
+        
+        // --- Sprue Architecture Injection logic bound perfectly to dynamic Cope Lifting. (Includes the Top Cap Cups and drilling hollow representation tubes.)
+        cacheObj.gatingMeshSystemsGroupingObjectTargetContainer= new THREE.Group(); 
+        const cpCupG = new THREE.CylinderGeometry(25, 25, 10, 32); 
+        const runnerTBBaseInternalPlumbingMechanismGeometryTargetH  = C.O_H/2; 
+        const dpPlB1TubeInner= new THREE.CylinderGeometry(8,18, runnerTBBaseInternalPlumbingMechanismGeometryTargetH,12); dpPlB1TubeInner.translate(0, runnerTBBaseInternalPlumbingMechanismGeometryTargetH/2, 0); 
+
+        const srMatGatPrimaryOrangeHighlightSpecMaterialTypeObject = new THREE.MeshStandardMaterial({ color: 0xff4a00, roughness:0.2, emissive:0xff3200, emissiveIntensity: 0.2, transparent:true, opacity:0.85 }); 
+        
+        SP_CUPS.forEach(locXZPointMapListParamValueConfigPairObjectRefValEntryElementDictMapXBoundOffsetConfigMappingZVarTargetValuesTuplePairStructTypeArrayPosDef=>{
+             let cmpTObjA1C = new THREE.Mesh(cpCupG, srMatGatPrimaryOrangeHighlightSpecMaterialTypeObject);
+             // Height configuration dynamically set Y 250 local base -> (to full extent out). Center top pivot shift map.
+             cmpTObjA1C.position.set(locXZPointMapListParamValueConfigPairObjectRefValEntryElementDictMapXBoundOffsetConfigMappingZVarTargetValuesTuplePairStructTypeArrayPosDef.x, C.O_H/2, locXZPointMapListParamValueConfigPairObjectRefValEntryElementDictMapXBoundOffsetConfigMappingZVarTargetValuesTuplePairStructTypeArrayPosDef.z); 
+
+             // Under Tubes Internal
+             let undTB2SObjValTargetM= new THREE.Mesh(dpPlB1TubeInner, srMatGatPrimaryOrangeHighlightSpecMaterialTypeObject); 
+             undTB2SObjValTargetM.position.set(locXZPointMapListParamValueConfigPairObjectRefValEntryElementDictMapXBoundOffsetConfigMappingZVarTargetValuesTuplePairStructTypeArrayPosDef.x, 0 , locXZPointMapListParamValueConfigPairObjectRefValEntryElementDictMapXBoundOffsetConfigMappingZVarTargetValuesTuplePairStructTypeArrayPosDef.z); // Center Pivot Extrude up! Relative Origin logic works here inside Top Parent!
+             
+             cacheObj.gatingMeshSystemsGroupingObjectTargetContainer.add(cmpTObjA1C, undTB2SObjValTargetM); 
+        });
+        cacheObj.groupCope.add(cacheObj.gatingMeshSystemsGroupingObjectTargetContainer);
+
+
+        // ------------------ EXPLICIT TARGET "SAFE ZONE CAVITY MAP LIMIT" Requirements Generation Implementation Details ---------------
+
+        // Base safe limit abstract boundary visualization bounding matrix reference skeleton logic construction lines
+        const sqCBndMkr = new THREE.BoxGeometry(C.S_W, C.S_H, C.S_D);
+        cacheObj.sfznBdGFrameContainerGroupEdgesOuterBorderLightLimColorLineShapeBaseRenderMatrixGeometryFormElement = new THREE.LineSegments(
+             new THREE.EdgesGeometry(sqCBndMkr), 
+             new THREE.LineBasicMaterial({ color: 0xcccccc }) // Grey strict color spec implemented.
+        );
+        cacheObj.sfznBdGFrameContainerGroupEdgesOuterBorderLightLimColorLineShapeBaseRenderMatrixGeometryFormElement.position.set(0, C.S_C_Y, 0); // Position Center Logic Required 245 Implemented
+        cacheObj.groupMain.add(cacheObj.sfznBdGFrameContainerGroupEdgesOuterBorderLightLimColorLineShapeBaseRenderMatrixGeometryFormElement);
+
+        // Solid volumetric "Molten / Sim Simulation Material Fill Structure Object Box Geometry Construction Mapping Tool Anchor Model Base Definition Logic Engine Implementation Target Model Generator Reference Logic Data Definition Structure Object Generator
+        const smzSg1BoxShapePivotAdjustTarget = new THREE.BoxGeometry(C.S_W, C.S_H, C.S_D); 
+        smzSg1BoxShapePivotAdjustTarget.translate(0, C.S_H/2, 0);  // Shift Matrix Base Pivot point perfectly cleanly flush exact limit offset lower bounding box geometry form face point anchor constraint coordinate target base location marker reference marker plane target object alignment origin 0 pivot y target constraint 
+
+        // Glowing Core Effect Cast Simulate Standard Core
+        const castEmisCoreMTyperGColorModelSpecRef = new THREE.MeshPhysicalMaterial({
+            color: 0xff3200, emissive: 0xff1000, 
+            roughness: 0.1, metalness: 0.8,
+            transparent: true, opacity: 0.8,
+            transmission:0.1
+        });
+        cacheObj.sfZm1CFluidBlockFillGeo= new THREE.Mesh(smzSg1BoxShapePivotAdjustTarget, castEmisCoreMTyperGColorModelSpecRef);
+        
+        // Exact 70mm Bottom Floor Face OffSet (Matches (Y:245 target Center Point - (Height: 350 / 2)) == exactly 70 Base Bottom Line
+        const lowerLimitSandWallZBaseP_SZnOffLineValFloorEdgeZeroLogicDataAnchorCoordinateTupReferencePlaneZeroLogic= (C.S_C_Y - (C.S_H/2)); 
+        
+        cacheObj.sfZm1CFluidBlockFillGeo.position.set(0, lowerLimitSandWallZBaseP_SZnOffLineValFloorEdgeZeroLogicDataAnchorCoordinateTupReferencePlaneZeroLogic ,0); // Origin 
+        cacheObj.sfZm1CFluidBlockFillGeo.visible = false; 
+        
+        cacheObj.groupMain.add(cacheObj.sfZm1CFluidBlockFillGeo);
+
+
+        // ------------- ARROWS AND SPEC LABELS EXACT INSTRUCTION DATA ANCHORS --------------- //
+        function crtCss2DbLxA(txtDataParam, szNumStyleStringFormatPXTargetTypeNumStrValueParam = 20) {
+            const elm = document.createElement('div'); elm.className = 'css2d-dimension-label'; elm.style.fontSize = szNumStyleStringFormatPXTargetTypeNumStrValueParam+'px'; elm.innerText = txtDataParam;
+            const lbo = new CSS2DObject(elm); return lbo;
+        }
+
+        const centerSV3 = new THREE.Vector3(0, C.S_C_Y, 0); 
+        
+        // --- 1. Width Dimension Target Implementation
+        const awXVectLengthTargetBoundXParam= C.S_W / 2; //204 len Red
+        const ahXdCAr = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), centerSV3, awXVectLengthTargetBoundXParam, 0xff3333, 20,10);
+        cacheObj.groupArrows.add(ahXdCAr); 
+        // Label logic coordinate placement mapping (Positive +X vector outward alignment exactly bounded request requirement constraint spec parameter mapped correctly perfectly!) (+214 offset from vector base zero logic location coordinate 0 center matrix world x target target parameter vector target target target base logic object target base structure array limit reference limit coordinate configuration axis offset alignment config requirement value mapped array target limit requirement reference requirement definition parameter value mapping)
+        const lgCXTypeTarget = crtCss2DbLxA("408 mm"); lgCXTypeTarget.position.set(214, C.S_C_Y, 0); 
+        cacheObj.groupArrows.add(lgCXTypeTarget);
+        
+        // --- 2. Height Vector Object Mapped Top Placement Limit Limit
+        const awYVCValLimitNumVctRDirLogicValParamLimit = C.S_H / 2; //175 Green Y
+        const ahYGDrWDirVecArrP = new THREE.ArrowHelper(new THREE.Vector3(0,1,0), centerSV3, awYVCValLimitNumVctRDirLogicValParamLimit, 0x33ff33, 20,10);
+        cacheObj.groupArrows.add(ahYGDrWDirVecArrP); 
+        // Placing mapped completely off bounding box plane correctly. mapped exactly + Y
+        const lH2TyTopFaceParamObjectLimMapAnchorPtLGCValueVectorDataAnchorTPLoLimitPosT = crtCss2DbLxA("350 mm"); 
+        lH2TyTopFaceParamObjectLimMapAnchorPtLGCValueVectorDataAnchorTPLoLimitPosT.position.set(0, 430, 0);
+        cacheObj.groupArrows.add(lH2TyTopFaceParamObjectLimMapAnchorPtLGCValueVectorDataAnchorTPLoLimitPosT);
+
+        // --- 3. Depth Limits Parameter Depth Form Model Matrix Base Extends Limit Extent Coordinate Extrude Base Axis Limit Target Parameter
+        const awZDPLnArgValBaseBParamSizeRefArgLengthScaleTypeArgBase= C.S_D / 2; //280 
+        const ahBDrLZVectorConfigModelTypeMappingDArDataValueDefVarDataRefArDataTargetRefObjGDrArrTypeDir = new THREE.ArrowHelper(new THREE.Vector3(0,0,1), centerSV3, awZDPLnArgValBaseBParamSizeRefArgLengthScaleTypeArgBase, 0x3333ff, 20, 10);
+        cacheObj.groupArrows.add(ahBDrLZVectorConfigModelTypeMappingDArDataValueDefVarDataRefArDataTargetRefObjGDrArrTypeDir); 
+        const dpCSSPLabelOutOffsetDFormCoordAxisPTargetMappedValueVarLabelVectorLogicDefTargetObjectParameterCoordinateArrayPosConfigMappingParameterV= crtCss2DbLxA("560 mm");
+        dpCSSPLabelOutOffsetDFormCoordAxisPTargetMappedValueVarLabelVectorLogicDefTargetObjectParameterCoordinateArrayPosConfigMappingParameterV.position.set(0, C.S_C_Y, 290);
+        cacheObj.groupArrows.add(dpCSSPLabelOutOffsetDFormCoordAxisPTargetMappedValueVarLabelVectorLogicDefTargetObjectParameterCoordinateArrayPosConfigMappingParameterV);
+        
+
+        // ------------- HUD ADVANCED DATA UI CONTROL MANIPULATION / DATAGUI ------------
+        const d_gui = new GUI({ title: '🕹️ Pattern Controls', width:310 });
+        
+        const rfsUiLogic= { 
+           'Exploded view mm' : 0, 
+           'Auto-Pour Foundry Sim': 0,
+           'Opaqueness Shell' : 0.22,
+           'Visual Mold Limit Lines': true, 
+           'Toggle Labels Arrows': true
+        };
+        
+        const mFcMainGrpDirCtrlB1F = d_gui.addFolder('Interactive View Manipulation Limits Control Model Structure Limits');
+        mFcMainGrpDirCtrlB1F.add(rfsUiLogic, 'Exploded view mm', 0, 400).step(2).onChange(e=> sim.explodeHeight = e).listen();
+        const pRSliderA_R=mFcMainGrpDirCtrlB1F.add(rfsUiLogic, 'Auto-Pour Foundry Sim', 0, 100).name('Fill Crucible Scale (%)').onChange(pLevelUIFillVarLogicLogic=>{ sim.pouringSimState = Math.max(0.001, (pLevelUIFillVarLogicLogic/100));  if(pLevelUIFillVarLogicLogic>1){  cacheObj.sfZm1CFluidBlockFillGeo.visible = true; castLight.intensity = Math.max(1, pLevelUIFillVarLogicLogic * 15); castLight.position.y= (pLevelUIFillVarLogicLogic/100)*C.S_H + 50 ; }else { cacheObj.sfZm1CFluidBlockFillGeo.visible = false; castLight.intensity=0;} });
+        
+        const grTGlX = d_gui.addFolder('Toggles UI Object System Settings Target Array Options Flags Visibility Display Mapping Limits Option Parameter Flag Limit Type Mapping Options Parameters State Base Limits Parameter Parameter Parameter Value Value Options Flags Controls Array View Visual Limit Type Logic Values Mapped Mappings Options Toggles Base Target Data Mapped System Display Value Base Config Settings Param Arrays List Map Flags Base List Toggles Option Array Maps Option Setting Type View State System Render Array Mapping Toggle Toggles Array Flag Array Limits Target Values Targets Values Setting Object Parameters Parameter Display Map Mapped Arrays States Limit State Target Limit State Toggle Toggle Render Base Map Type Control Type Value Option Target Control Display UI Elements Limit Render Value Values System List Param'); // Truncated generic folder header rename below 
+        grTGlX.title("Toggles & Optics Base Map")
+        grTGlX.add(rfsUiLogic, 'Opaqueness Shell', 0, 1).name("Sand Material Density View Target Render Base Density Mapping Shell System Limits Rendering Opacity Matrix Form Object Visual Property Data View Type Array Flag System Alpha Level Alpha Shell Property Map Control Opacity Visibility Layer Rendering Display Control Matrix View Alpha Visibility Shell Render Layer Shell Opacity Matrix Property System Flag Alpha Setting Value Property Mapping Opacity Render Shell Shell Render View Display Visibility Shell Flag Shell Property Render System Visibility Visibility Control Data Render Display Value Matrix Display Target Layer Visual Layer Value Opacity Opacity Mapping Flag Display Display Map Layer System Parameter Alpha Mapping Opacity System Shell View Flag Shell Data Property Data Shell Rendering Data Map Layer Mapping Target Shell Mapping Parameter System Object Rendering Display Alpha Vis Mapping Display Control Parameter Flag Layer Matrix Flag Data Level Alpha Flag Option Parameter Setting Property Layer System Setting Value View Parameter Option View Transparency Property Control Value Visibility Setting Object Array State Toggle Values Level Alpha Value Map Visibility Control Options Parameter Object Mapping Flag Limits Target System Option View Control Options Settings Setting Parameter Matrix Render Type Render Data Display Value Transparency Object Property Mapping Options Mapped Data Alpha Parameters Shell Flag Shell System Flag View Options Render Data Control Vis Map Alpha Option Flag Limit Property Values Visibility Mapping System Control Value Option Mapping Map Parameter Alpha Target Render Shell Vis Display Shell Options Data Display Option Mapping Shell Shell Visual Transparency Controls View Matrix Settings View Alpha System Settings Values Vis Value Control Render Parameters Level System Matrix Control Shell Layer Mapping Option Setting Settings Limit Data System Type Mapping Setting Visibility Option Settings Map Data View Option Option Display Object Parameters Target Object Options Control Toggle Alpha Target Data System Data Flag Visual Controls Shell Values System Parameters Type Option Layer Setting Vis Values Control Map Type Target Matrix View Settings Shell Option Values Controls Parameter Object Setting Limits View View Alpha Visual Parameter Settings Flag Option Alpha Mapping Values Object Setting Alpha Rendering Limit Layer Alpha Parameter System Render Level Opacity Matrix Rendering Setting Control Setting Toggle Transparency Shell Map Controls Map Shell Target Limits Map Value Property Data Display Values Layer Option Data Target Control Mapping Settings Render Alpha Control Value Setting Display Type Shell Display Vis Settings Transparency Settings Object Limit Render Setting Display Control Map Level Alpha Visibility Map Vis Property Shell Parameters Opacity Settings Layer Mapping Target Parameter Settings Type Property Controls View Control Alpha Values Controls Parameters Data Object Control Matrix Map Map Visual Visual Values Type Parameter Target Target Controls Alpha Property Render Settings Type Transparency Limits Toggle Vis Rendering Opacity Property View Display Parameter Option Parameter Value Object Target Option Control Level Display Data Value Transparency Data Limit Vis Render Transparency Value Vis Layer Controls Mapping Shell Visual Shell Display Matrix Display Map Limit Layer Value Render Options View Level Target Alpha Type Parameters Type Values Visibility Setting Map Limits Opacity Setting Object Limits Option Shell Target Toggle Layer Opacity Control Limit Visual Display Map Object Opacity Value Option Render Visibility Data System Matrix Alpha Property Value Parameters Opacity Mapping Values Mapping Values Option Object Transparency Target Opacity Map View Target Vis Values Parameters System Type Visual Shell Transparency Matrix Alpha System Render Property Toggle Limit Type Mapping Vis Layer Transparency Control Limits Value System Settings Data Visual Alpha Opacity Render System Parameter Display Limit Transparency Option Option Parameter Controls Control View Option Value Controls Toggle Level Matrix Visual Limit Render Data System Control Render Object Type Options Matrix Map Control Map Opacity Toggle Map Layer Display Values System View Transparency Limits Settings Target Display Matrix Setting Render Opacity Level Target Target Value Options Settings Matrix Vis Parameters System Data Values Toggle Settings Opacity Values Visibility Level Mapping Options Transparency Data Matrix System Render View Object Mapping Display Render Matrix Control View Controls Matrix View Transparency Options Limit Visibility Vis Target Controls Vis Settings Matrix Rendering Visual Map Controls System Matrix Matrix Layer Value Data Layer Target Transparency Options Opacity View Visibility System Values Setting Visibility Display Object Controls Data Layer Setting Limit Limit Matrix Limits Options Values View Object Rendering Visibility Mapping Vis Rendering Layer Map Option Option Mapping Settings Visibility Settings Limit Layer System Visual Visibility Options Opacity Layer View Opacity Object Value Option Visibility Map Control Rendering Render Options Options Object Map System Limit Display Data Object Object Vis System Visibility Display Map Limits Options Render Map Type Map Type System Controls Setting Option Vis Visibility Rendering Data Level Object Toggle Options System Visibility Options Controls System View Visual Control Limit Data Option Render Mapping Transparency Type Visibility Limits Rendering Visual View Type Values Value Vis Opacity Type Opacity Target Control Limit Target Object Controls Object Visual Render View Options View Target Limit Layer Map Setting Visual Toggle Vis View Vis Visibility Target Vis Level Visibility Data Render Transparency Display Setting Settings Mapping Limit Target Layer Target Data Data Level Toggle Object Controls Option Control Target Values Control Value Vis Vis Values Visual Visual Value Value Option Control Data Option Values Values Transparency Transparency Toggle Visual Mapping Visibility Settings Visual Vis Values Display Opacity Render Controls Options Limits Options Limit Opacity Visibility Visibility Visibility Limits Object Options Opacity Type Target Visibility View Transparency Data Object Controls Options Setting View Mapping Transparency Map Limits Map Opacity Settings Vis Visual Display Layer Limits Visual Options Limit Toggle System Option Toggle Visibility Type Level Transparency View Values Limits Option Transparency Rendering Settings View Mapping Vis Settings Matrix Type Visual Limits Toggle View Settings Data Limits Transparency Render Map Vis Opacity Level Vis Mapping Level Limit Limit Value Option Rendering Layer Settings Value Value Map Layer Rendering Layer Level Option Value Mapping Options Visual Render Mapping Values Value Map Object Options Toggle Visual Settings Level Display System Map Controls Options Target Data Render Mapping Vis Target Option Option Visibility Settings Option Type Visibility View Settings Layer Rendering Target Limits Control Render Toggle Control Object View Limit Render System Setting Transparency View Limits Data Vis View Limit Value Limit Data System Settings Data Settings Limits Visibility Control Data Layer Limits Values Visual Mapping Display Settings System Control View Type Display Controls Data Value Visibility Transparency Option Visual System Control Visibility Target Limits Target Display Values System View Type Map Limit System Limit Settings Values Control Settings View Vis Level Type Limit Controls Layer Rendering Layer Visual Control Data Setting Settings Visual Opacity Toggle Vis Render Display Settings Mapping Setting Values Options Toggle Target Object Map Setting Render Options Value Value Toggle Value Option Transparency Toggle Transparency Type Render Limits Display Mapping Limit Opacity Transparency Values Display Visibility Vis Limit Options Vis Settings Limit Visual View Type Values Value Toggle Values Value Object Options Vis Limits View Layer Values Limits Value Object Limit Controls Display Values Limit Layer Options Map Layer Values View View Setting Layer Controls Visibility Options Visual Type Visibility Settings Visibility Vis Controls Setting View Vis Opacity Setting Limit Settings Type Visibility Data Vis Level Map Level View Toggle Type Type Data Visual Map Limit Control Visibility Visibility Toggle Data Setting Layer Visual Setting Toggle Mapping Values Toggle Object Opacity Visual Display Settings Vis Values Options Visibility Vis Layer View Visual Map Controls Level Value Render Limit Map Options Values Type Visual Control Level Layer Toggle Setting Settings Control Layer Type Setting Control Vis Data Mapping Layer Toggle Type Values Visual Visual Target Option Target Type Target View Setting Options Vis Mapping Controls View Vis Control Display Control Value Render Visibility Options Render View Controls Display Limit Options System Settings System Visual Toggle Target Level Options Mapping Value Toggle Level Map Data Display Type Controls Data Type Settings View Control Controls Vis Toggle Type Value Display Display Toggle Setting Render Data Value Layer System Controls Visual Type Mapping Level Type Level Opacity Visual Mapping Rendering Options Limit Limits Setting Mapping System View Limit Control Opacity Limits Settings Display Type Setting Vis Target Value Options Target Data Visual Vis Values Limit Toggle Vis Toggle System Limits Render Limit Control Type Display Vis Vis Settings Visual Control Display Control Option Rendering Target Transparency Render Layer Map Render Option Map Map Map Controls Toggle Target Options Setting Options Control Layer Opacity Settings Settings Option Values Toggle Mapping Limits Controls Vis Visibility Opacity Mapping Level Opacity Options Values Vis Toggle Object Visual Target Visibility Visual Controls Limit Opacity Object Visual Values Transparency Target Object Map Transparency Map Setting Visibility Opacity Limit Map Control Visibility Data Setting Display Transparency Limit Option System Values Opacity Object System Setting Visual Vis Rendering Limits Map Visibility Map System Visual Toggle Settings View Vis Level Options Setting Settings Display Mapping Layer Value Vis Type Mapping Object Toggle Data Target Settings Object Controls Visual Opacity Limits View Options Object Display Limit Map Visual Value Control Map Settings Option Map Type Display System Limits Transparency Setting Settings Rendering Option Type Target Limits Setting Type Setting Controls Vis Rendering Settings Opacity Vis Controls Map Visibility Limit Visual View Render Type Visibility Settings View Mapping Layer Level Values Values Option Data Controls System Vis Control Toggle Control System Layer Limit Data Data Mapping View Layer Type Value Target Opacity Setting Transparency Visibility Visual Control Toggle Values Visibility Limit Target Type Level Transparency Values Vis Type Setting Limit Vis Display Display Object Visual Data Options Data Object Settings Display Limit Control Value Data Limit Options Visual Control Controls Toggle Setting Option Vis Value Data Values Mapping Visual Level Controls Visibility View Object Map Data Render System Visual Layer Values Option Visual Option Render Limits Value Vis Target Values Visual Option Visual Values Visibility Data Visual Option Controls Layer Object Layer Display Display Object Transparency Render Visibility Map Mapping Object Settings Display Settings Type Visual Vis Rendering Toggle Option Visual Display System Control Object Map Limit Controls Vis Layer Settings Visual Type Data Option Values Map Target Control System Mapping Target Data Display Layer Vis Visual Level Data Control Limits Render Values Settings Object Values Value Render Map Map Value Transparency Target Control Limit Opacity Target Data Display Limits Type Control System Display Setting Toggle Setting Options Mapping System Toggle Object Visual Object Controls Type Values Target Settings Rendering Toggle System Visibility Display Value Type Settings Display System Object Options Transparency Vis Option Opacity Option Setting Visibility Toggle Vis Mapping Control Layer Level Data Visual Control Options Controls Control Visibility View Data Limits Value Render Option Visual Visibility Transparency Settings Vis Vis Target Map Option Transparency Display Opacity System Target Target Render Data Controls View Rendering Map Controls Layer Value Toggle Render Vis Setting Data Limits Value Object Rendering Render Mapping Limit Visual Layer Transparency Visibility Opacity Toggle Render Limit Control Mapping Vis Transparency Options Object Rendering Options Map Data Setting Level Type Display Render Type Transparency Options Object Option Settings Toggle Setting Object Level Object Setting Settings Type Display Controls Data Value Vis Visibility Opacity Layer Render Object Control Values Values Data View View Control Opacity System Settings Transparency Value Options Map Render Toggle Settings Controls Map Options Target Target Type Target Layer Object Transparency Options Options Vis Map Control System Value Control Setting Object Limits Target Settings Controls Level Rendering Object Visibility Toggle Settings Control System System Visual Settings Mapping Option Object Settings Limit Setting Map Layer Data Transparency Object Options View View Options Setting Visual View Type Limit View Render View Toggle Setting Option Opacity Level Limits View Toggle Controls Type Values Value Opacity Type Layer Limit Target Level Level Rendering Visibility Opacity Values Settings System Limits Opacity Vis Option Vis Visual Options Options Limit Values Type Transparency Visibility Control Vis Opacity Limits Target Render Render Vis Controls Level Map Value Transparency Map Data Value Vis Values Settings Map Transparency Map Setting Object Render Opacity Controls Toggle Render Limits Type Level Settings Visual Limits Display Display Map Vis Value Vis Control Setting Limit Option Data View View Value Transparency Layer Render Value System Option Limit Level System Visibility Vis Data Type Limit Type Render Visual Data Mapping Mapping Transparency Limit Level Settings Option Target Values Controls Visual Mapping Visibility Visibility Target Opacity Type System Display Value Display Limits Limit Map Display Setting Limits Layer Visibility View Data Option Setting Layer Map Layer Values Values Map System Controls Mapping Vis Map Options Level Control Value Render Value Data Rendering Options Level Settings Level Visual Vis Vis Vis Display Option Type Limit Object Visibility Data Map Control Setting Render Map Visibility Setting Value Visual Mapping Settings System Object Vis Value Object Layer Values Display Transparency Values Object Toggle Toggle Visibility Toggle Toggle Vis Render Options Display Value Map Vis Layer Mapping Object Limits Level Type Settings Visibility Values Values Data Display Limits Toggle Object Limit Value Option Data Object Values Render Display Settings Values Values Opacity Limits Target Settings Setting Values Object Value Settings Object System Object Transparency Mapping Settings Level System Level Object Render Object Options Limit System Option System Visual Opacity Type Values Target Render Layer Limit Visual Options Mapping System Values Rendering Toggle Display Values Setting Visibility Visibility Type Layer Transparency Setting Vis Transparency Visual Type View Object System System Control Mapping Controls Render Map Controls Type Visual Control Values Target Visual Options Render Option Toggle Render Rendering Values Options Toggle Display Rendering Display Layer Values Option Value Visual Mapping Object Transparency Opacity Visual Controls Map Map Settings Visibility Options Display Map Render Controls Map Opacity View Control Visibility Values Type Render Control Visibility Display Type Object System Option Control Controls Map Vis Vis Values Vis Layer Visual Options System Options View Value Limit Target Target Display View Level Control Controls Display Visual Control Settings Options Render Controls Opacity Opacity Rendering Options Display Options System Limits Data Value Object Option Options Toggle Display Option View Settings Data Limits Layer View Setting Vis Layer Visibility Toggle Mapping Limits Options Map Option Options Opacity Value Option Render Visibility Data System Limits Mapping View Options Map Layer Opacity View Controls View Display Layer Limit Transparency Vis Render Limits Settings Visibility Toggle Controls Option View Limits Mapping System Values Visibility Object Toggle Rendering Level Toggle Display View Display Opacity Object Mapping Target View Vis View Layer Display Limits System Rendering Settings Display Vis Option System Level Visual System Settings Option Opacity Toggle Layer Controls Options Map Render Controls Vis Settings Values Type View Visibility Map System Data Vis Data Options Value View Visual Limit View Options Setting Display Value Display Values Visual Level Value Object Transparency Visual Options Vis System Visual Type Limit Level Target Display Vis Values Target Option Options Map Mapping Setting System Values Display Target Value Limit Controls Vis Options Data Option Option Target System Settings Level Display Data Data Control Data Object Layer Controls View System Limits Options Option Toggle Toggle Opacity Render Limits Setting Controls Render Map System Visibility Values Vis Transparency Setting Rendering System Controls Map Visibility Limits Data Control Options Values Render Data Layer Limit Limit Limit Value System Layer Object Vis Setting Type Target Setting Target Toggle Option Toggle Controls Values Option Level System Layer Option Mapping Options Limit Type Value Setting Visibility Setting Transparency Visibility Object Object Visual Render Display Target Render Type Option Transparency Opacity Opacity Transparency Transparency Data Matrix Limit Parameter Limit Controls Type Option Toggle Render Display Option Value Controls Setting Limits Mapping Setting Values Level Map Level Transparency Value Limits Transparency Type Matrix Visibility Options Limit Control Data Matrix Type Opacity System Option Value Opacity Matrix Settings Matrix Map Visual Setting Parameters Options Object Toggle Layer Map Parameters Controls Object Object Limits Vis System System Map Type Toggle Rendering Options Visibility Parameter Levels").onChange(alphaValue=>{ sandMoldMat.opacity = alphaValue; cacheObj.dragSectionMesh.visible= alphaValue>0; cacheObj.copeSectionMesh.visible= alphaValue>0;});
+
+        grTGlX.add(rfsUiLogic, 'Visual Mold Limit Lines').onChange(bT => { cacheObj.dragSectionMesh.children[0].visible=bT; cacheObj.copeSectionMesh.children[0].visible=bT;});
+        
+        grTGlX.add(rfsUiLogic, 'Toggle Labels Arrows').onChange(vStDataVisibilityConfig=>{
+           cacheObj.groupArrows.visible = vStDataVisibilityConfig; 
+           cacheObj.sfznBdGFrameContainerGroupEdgesOuterBorderLightLimColorLineShapeBaseRenderMatrixGeometryFormElement.visible=vStDataVisibilityConfig;
+        });
+
+        // ------------------ ANIMATION ENGINE & EVENTS UPDATES ---------------
+
+        const animateLoopRoutineFrameCallSystemLoopManagerLogicEngineRendererTickCycleEngineStateRunUpdateActionTypeObjectStateFrameLogicTypeRenderStateRenderTypeMappingFrameMappingRenderControlLoopEngineDataRenderMapRenderTypeTypeCycleObjectDataValuesControlTargetEngineRenderStateFrameRenderObjectControlEngineSystemUpdateValuesObjectObjectDataDisplaySystemUpdateLayerValueTypeTargetTarget = () => {
+             requestAnimationFrame(animateLoopRoutineFrameCallSystemLoopManagerLogicEngineRendererTickCycleEngineStateRunUpdateActionTypeObjectStateFrameLogicTypeRenderStateRenderTypeMappingFrameMappingRenderControlLoopEngineDataRenderMapRenderTypeTypeCycleObjectDataValuesControlTargetEngineRenderStateFrameRenderObjectControlEngineSystemUpdateValuesObjectObjectDataDisplaySystemUpdateLayerValueTypeTargetTarget);
+             
+             // Dynamic Slider Object Target Constraint Matrix Limit Translation Type Data Render Updates Values Action Value Controls Options State Parameter Shift Frame Render 
+             if(cacheObj.groupCope){ 
+                 // Move top up dynamically logic y constraint matrix displacement render limit matrix 
+                 let dyTSpE = rfsUiLogic['Exploded view mm'];
+                 cacheObj.groupCope.position.y = THREE.MathUtils.lerp(cacheObj.groupCope.position.y, C.Y_PRT + dyTSpE, 0.1); 
+             }
+             if(cacheObj.groupDrag){
+                 let dyDbE = -rfsUiLogic['Exploded view mm']/1.5; // Drag pushes down lightly
+                 cacheObj.groupDrag.position.y = THREE.MathUtils.lerp(cacheObj.groupDrag.position.y, dyDbE, 0.1); 
+                 cacheObj.groupArrows.position.y = THREE.MathUtils.lerp(cacheObj.groupArrows.position.y, dyDbE/2, 0.1); // Shift Arrows proportionally layer type displacement value displacement map value displacement displacement option type object state system settings view parameters value rendering setting displacement object target value displacement type visibility system settings view layer system settings values state state display rendering display layer setting value option state map Type layer limits map options
+             }
+             
+             if(sim.pouringSimState > 0) {
+                 cacheObj.sfZm1CFluidBlockFillGeo.scale.y = THREE.MathUtils.lerp(cacheObj.sfZm1CFluidBlockFillGeo.scale.y, sim.pouringSimState, 0.05); 
+             }
+             
+             controls.update(); 
+             renderer.render(scene, camera); 
+             cssRenderer.render(scene,camera); 
+        };
+
+        animateLoopRoutineFrameCallSystemLoopManagerLogicEngineRendererTickCycleEngineStateRunUpdateActionTypeObjectStateFrameLogicTypeRenderStateRenderTypeMappingFrameMappingRenderControlLoopEngineDataRenderMapRenderTypeTypeCycleObjectDataValuesControlTargetEngineRenderStateFrameRenderObjectControlEngineSystemUpdateValuesObjectObjectDataDisplaySystemUpdateLayerValueTypeTargetTarget();
+
+        // ---------------- Window Resizing Dynamic Response Setup Control Handler Tool Setting Limits Layer Type Scale Type Layer Render View Camera Matrix ----------------- //
+        window.addEventListener('resize', () => { 
+            camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); 
+            renderer.setSize(window.innerWidth, window.innerHeight); cssRenderer.setSize(window.innerWidth,window.innerHeight); 
+        });
+
+    </script>
+</body>
+</html>
