@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casting mold – safe zone with dimension arrows & labels</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #111;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        #info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.8);
+            color: #eee;
+            padding: 14px 24px;
+            border-radius: 12px;
+            border-left: 6px solid #ff6600;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 25px rgba(0,0,0,0.7);
+            z-index: 100;
+            pointer-events: none;
+            font-size: 15px;
+            line-height: 1.6;
+            border: 1px solid #333;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        #info strong {
+            color: #ff6600;
+        }
+        .note {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            color: #aaa;
+            background: rgba(20,20,20,0.8);
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 13px;
+            border: 1px solid #333;
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: #ccc;
+            background: rgba(0,0,0,0.6);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            backdrop-filter: blur(4px);
+            border-left: 4px solid #ff6600;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .css2d-label {
+            pointer-events: none;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="info">
+        <strong>🏭 METAL CASTING MOLD – SAFE ZONE WITH DIMENSION ARROWS</strong><br>
+        <span style="color:#000; background:#fff; padding:2px 6px;">⬛ outer edges black</span> 
+        <span style="color:#ccc;">⬜ safe zone edges light grey</span> 
+        <span style="color:#ff6600;">🟠 parting plane (60% transparent) & sprue cups</span><br>
+        Mold: 508×660×500 mm | Safe zone: 408×560×350 mm<br>
+        Parting plane at Y=250 | Sprue cups Ø50 at (0,0), (160,0), (0,235), (160,235)<br>
+        <span style="color:#ff3333;">🔴 width</span> <span style="color:#33ff33;">🟢 height</span> <span style="color:#3333ff;">🔵 depth</span> arrows with labels
+    </div>
+    <div class="legend">
+        ⬤ <span style="color:#ff6600;">orange discs</span> = sprue cups · <span style="color:white;">📐 dimension labels (20px) + arrows</span>
+    </div>
+    <div class="note">🖱️ drag to rotate · scroll to zoom</div>
+
+    <!-- Load Three.js core, OrbitControls and CSS2DRenderer from CDN (r128) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/renderers/CSS2DRenderer.js"></script>
+
+    <script>
+        (function() {
+            // --- Setup scene, camera, renderers (WebGL + CSS2D) ---
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x111111);
+
+            const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 5000);
+            camera.position.set(1000, 600, 1000);
+            camera.lookAt(0, 250, 0);
+
+            // WebGL renderer
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.shadowMap.enabled = false;
+            document.body.appendChild(renderer.domElement);
+
+            // CSS2 renderer for labels
+            const labelRenderer = new THREE.CSS2DRenderer();
+            labelRenderer.setSize(window.innerWidth, window.innerHeight);
+            labelRenderer.domElement.style.position = 'absolute';
+            labelRenderer.domElement.style.top = '0px';
+            labelRenderer.domElement.style.left = '0px';
+            labelRenderer.domElement.style.pointerEvents = 'none';
+            labelRenderer.domElement.classList.add('css2d-label');
+            document.body.appendChild(labelRenderer.domElement);
+
+            // --- Controls ---
+            const controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.target.set(0, 250, 0);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.screenSpacePanning = true;
+            controls.maxPolarAngle = Math.PI / 2;
+
+            // --- Lighting (increased intensity for better contrast) ---
+            const ambientLight = new THREE.AmbientLight(0x606060);
+            scene.add(ambientLight);
+
+            const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+            dirLight.position.set(500, 1000, 500);
+            scene.add(dirLight);
+
+            const fillLight = new THREE.DirectionalLight(0xccddff, 0.6);
+            fillLight.position.set(-300, 400, -400);
+            scene.add(fillLight);
+
+            // --- Visual Aids: Ground grid only ---
+            const gridHelper = new THREE.GridHelper(1200, 12, 0x888888, 0x444444);
+            gridHelper.position.y = 0;
+            scene.add(gridHelper);
+
+            // ========== 1. MOLD OUTER BOX ==========
+            const outerW = 508;  // X
+            const outerD = 660;  // Z
+            const outerH = 500;  // Y
+
+            // Semi-transparent grey faces (opacity 0.2)
+            const outerGeo = new THREE.BoxGeometry(outerW, outerH, outerD);
+            const outerMat = new THREE.MeshPhongMaterial({
+                color: 0xaaaaaa,
+                transparent: true,
+                opacity: 0.2,
+                side: THREE.DoubleSide
+            });
+            const outerMesh = new THREE.Mesh(outerGeo, outerMat);
+            outerMesh.position.set(0, outerH / 2, 0);
+            scene.add(outerMesh);
+
+            // Black edges
+            const outerEdges = new THREE.EdgesGeometry(outerGeo);
+            const outerLines = new THREE.LineSegments(outerEdges, new THREE.LineBasicMaterial({ color: 0x000000 }));
+            outerLines.position.copy(outerMesh.position);
+            scene.add(outerLines);
+
+            // ========== 2. SAFE ZONE (CAVITY) – updated dimensions: 408×560×350, center Y=245 ==========
+            const offsetSide = 50;          // 50 mm from each side in X and Z
+            const offsetBottom = 70;         // drag side
+            const offsetTop = 80;             // cope side (500-150=350)
+            
+            const cavityW = outerW - 2 * offsetSide;   // 408 mm
+            const cavityD = outerD - 2 * offsetSide;   // 560 mm
+            const cavityH = outerH - (offsetBottom + offsetTop); // 500 - 150 = 350 mm
+            const cavityCenterY = offsetBottom + cavityH / 2; // 70 + 175 = 245 mm
+
+            // Light grey edges for safe zone (only edges)
+            const cavityGeo = new THREE.BoxGeometry(cavityW, cavityH, cavityD);
+            const cavityEdges = new THREE.EdgesGeometry(cavityGeo);
+            const cavityLines = new THREE.LineSegments(cavityEdges, new THREE.LineBasicMaterial({ color: 0xcccccc }));
+            cavityLines.position.set(0, cavityCenterY, 0);
+            scene.add(cavityLines);
+
+            // ========== 3. PARTING LINE (Y = 250) – 60% TRANSPARENT ORANGE PLANE ==========
+            const partingPlaneGeo = new THREE.PlaneGeometry(outerW, outerD);
+            const partingPlaneMat = new THREE.MeshPhongMaterial({
+                color: 0xff6600,
+                transparent: true,
+                opacity: 0.4,        // 60% transparent
+                side: THREE.DoubleSide
+            });
+            const partingPlane = new THREE.Mesh(partingPlaneGeo, partingPlaneMat);
+            partingPlane.rotation.x = -Math.PI / 2;
+            partingPlane.position.set(0, 250, 0);
+            scene.add(partingPlane);
+
+            // Orange perimeter line
+            const halfW = outerW / 2;
+            const halfD = outerD / 2;
+            const corners = [
+                new THREE.Vector3( halfW, 250,  halfD),
+                new THREE.Vector3(-halfW, 250,  halfD),
+                new THREE.Vector3(-halfW, 250, -halfD),
+                new THREE.Vector3( halfW, 250, -halfD)
+            ];
+            const loopPoints = [corners[0], corners[1], corners[2], corners[3], corners[0]];
+            const loopGeo = new THREE.BufferGeometry().setFromPoints(loopPoints);
+            const loopMat = new THREE.LineBasicMaterial({ color: 0xff6600 });
+            const partingLoop = new THREE.Line(loopGeo, loopMat);
+            scene.add(partingLoop);
+
+            // ========== 4. SPRUE CUPS (top face, Y=500) ==========
+            const cupRadius = 25;   // diameter 50
+            const cupHeight = 1;
+            const cupGeo = new THREE.CylinderGeometry(cupRadius, cupRadius, cupHeight, 32);
+            const cupMat = new THREE.MeshStandardMaterial({ color: 0xff6600, emissive: 0x221100 });
+            const cupY = 500 + cupHeight / 2;
+
+            const cupPositions = [
+                { x: 0, z: 0 },
+                { x: 160, z: 0 },
+                { x: 0, z: 235 },
+                { x: 160, z: 235 }
+            ];
+
+            cupPositions.forEach(pos => {
+                const cup = new THREE.Mesh(cupGeo, cupMat);
+                cup.position.set(pos.x, cupY, pos.z);
+                scene.add(cup);
+            });
+
+            // ========== 5. DIMENSION LABELS (CSS2D) & ARROWS FOR SAFE ZONE ==========
+            function createLabel(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                div.style.color = '#ffffff';
+                div.style.fontSize = '20px';
+                div.style.fontWeight = 'bold';
+                div.style.fontFamily = '"Courier New", Courier, monospace';
+                div.style.textShadow = '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000';
+                div.style.whiteSpace = 'nowrap';
+                div.style.background = 'rgba(0,0,0,0.6)';
+                div.style.padding = '2px 6px';
+                div.style.borderRadius = '4px';
+                div.style.border = '1px solid #333';
+                return new THREE.CSS2DObject(div);
+            }
+
+            // ----- Face labels (offset outward by 10 mm) -----
+            // Width label on right face
+            const labelWidth = createLabel('408 mm');
+            labelWidth.position.set(cavityW/2 + 10, cavityCenterY, 0);   // (204+10=214, 245, 0)
+            scene.add(labelWidth);
+
+            // Depth label on front face
+            const labelDepth = createLabel('560 mm');
+            labelDepth.position.set(0, cavityCenterY, cavityD/2 + 10);   // (0, 245, 280+10=290)
+            scene.add(labelDepth);
+
+            // Height label on top face
+            const labelHeight = createLabel('350 mm');
+            labelHeight.position.set(0, cavityCenterY + cavityH/2 + 10, 0); // (0, 245+175+10=430, 0)
+            scene.add(labelHeight);
+
+            // ----- Arrows with labels at tips -----
+            // Arrow helper function: origin, direction, length, color, label text
+            function addDimensionArrow(origin, dir, length, hexColor, labelText) {
+                const arrow = new THREE.ArrowHelper(dir, origin, length, hexColor, 15, 10); // head length 15, head width 10
+                scene.add(arrow);
+
+                // Label at tip (position = origin + dir * length)
+                const tipPos = origin.clone().add(dir.clone().multiplyScalar(length));
+                const label = createLabel(labelText);
+                label.position.copy(tipPos);
+                scene.add(label);
+            }
+
+            // Center of safe zone for arrow origins
+            const center = new THREE.Vector3(0, cavityCenterY, 0); // (0,245,0)
+
+            // Width arrow (X positive) – red
+            addDimensionArrow(center, new THREE.Vector3(1, 0, 0), cavityW/2, 0xff3333, '408 mm');
+            // Height arrow (Y positive) – green
+            addDimensionArrow(center, new THREE.Vector3(0, 1, 0), cavityH/2, 0x33ff33, '350 mm');
+            // Depth arrow (Z positive) – blue
+            addDimensionArrow(center, new THREE.Vector3(0, 0, 1), cavityD/2, 0x3333ff, '560 mm');
+
+            // ========== ANIMATION LOOP ==========
+            function animate() {
+                requestAnimationFrame(animate);
+
+                controls.update();
+
+                renderer.render(scene, camera);
+                labelRenderer.render(scene, camera);
+            }
+            animate();
+
+            // ========== RESIZE HANDLER ==========
+            window.addEventListener('resize', onWindowResize, false);
+            function onWindowResize() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                labelRenderer.setSize(window.innerWidth, window.innerHeight);
+            }
+
+            console.log('Mold dimensions (mm):', outerW, outerD, outerH);
+            console.log('Safe zone (castable area):', cavityW, cavityD, cavityH, 'center Y:', cavityCenterY);
+            console.log('Parting line opacity: 0.4 (60% transparent)');
+            console.log('Safe zone labels on faces (offset) and arrows with labels at tips.');
+        })();
+    </script>
+</body>
+</html>
