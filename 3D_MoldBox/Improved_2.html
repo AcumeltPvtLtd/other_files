@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Metal Casting Mold Tool</title>
+    <style>
+        :root {
+            --primary: #ff5500;
+            --secondary: #00eeff;
+            --safe-zone: #ff1155;
+            --bg-glass: rgba(15, 20, 28, 0.75);
+            --border: rgba(0, 238, 255, 0.4);
+            --text-glow: 0 0 8px rgba(0, 238, 255, 0.4);
+        }
+
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            font-family: 'Consolas', 'Segoe UI', Tahoma, sans-serif;
+            background-color: #050608;
+            background-image: radial-gradient(circle at 50% 50%, #1a1e26 0%, #050608 100%);
+        }
+
+        .panel-container {
+            position: absolute;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--secondary);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+            color: white;
+            padding: 18px 20px;
+            border-radius: 8px;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        #main-info {
+            top: 20px;
+            left: 20px;
+        }
+
+        #main-info h1 {
+            margin: 0 0 6px;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #ffffff;
+            text-shadow: var(--text-glow);
+        }
+
+        #main-info p { margin: 0; font-size: 0.8rem; color: #8ba2c4; }
+
+        #metrics-hud {
+            top: 100px;
+            left: 20px;
+            width: 250px;
+            border-left-color: var(--primary);
+        }
+
+        .metric-block {
+            margin-bottom: 12px;
+            border-bottom: 1px dashed rgba(255,255,255,0.1);
+            padding-bottom: 8px;
+        }
+
+        .metric-block:last-child { border-bottom: none; margin-bottom: 0; }
+        .metric-title { font-size: 0.65rem; text-transform: uppercase; color: #a5c6ff; letter-spacing: 1px; font-weight: 600; }
+        .metric-value { font-size: 1.25rem; font-weight: bold; margin-top: 4px; display: flex; justify-content: space-between; align-items: flex-end;}
+        .metric-sub { font-size: 0.75rem; color: #9ab4d1; font-weight: normal; }
+        
+        #legend {
+            bottom: 30px;
+            left: 20px;
+            line-height: 1.8;
+            border-left-color: #88ff66;
+        }
+
+        .legend-item { display: flex; align-items: center; margin: 8px 0; font-size: 0.8rem;}
+        .color-box { width: 14px; height: 14px; margin-right: 12px; border-radius: 3px; box-shadow: 0 0 6px rgba(255,255,255,0.2); }
+
+        .css-label {
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            background: rgba(10, 15, 20, 0.85);
+            padding: 5px 10px;
+            border-radius: 6px;
+            border: 1px solid #555;
+            backdrop-filter: blur(4px);
+            white-space: nowrap;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.8);
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .lbl-x { border-left: 4px solid #ff3333; }
+        .lbl-y { border-left: 4px solid #33ff33; }
+        .lbl-z { border-left: 4px solid #3333ff; }
+
+        .loading {
+            position: fixed;
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            color: var(--secondary); font-size: 1.2rem; text-transform: uppercase;
+            letter-spacing: 2px;
+            pointer-events: none; transition: opacity 0.5s; z-index: 1000;
+        }
+    </style>
+
+    <!-- Map clean external module resolutions directly Native browser spec -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/",
+                "lil-gui": "https://esm.sh/lil-gui@0.19.2"
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="loader" class="loading">Initializing Geometry Constraints...</div>
+
+    <div id="main-info" class="panel-container">
+        <h1>Industrial Mold Vis.</h1>
+        <p>Interactive Dimensions & Tolerances Analysis</p>
+    </div>
+
+    <div id="metrics-hud" class="panel-container">
+        <div class="metric-block">
+            <div class="metric-title">External Vol. Flask Cap</div>
+            <div class="metric-value">167.6 L</div>
+        </div>
+        <div class="metric-block">
+            <div class="metric-title">Casting Working Limits Volume</div>
+            <div class="metric-value" style="color:var(--primary)">79.9 L <span class="metric-sub">Max Target Area</span></div>
+        </div>
+        <div class="metric-block">
+            <div class="metric-title">Liquid State (Pour Fill %)</div>
+            <div class="metric-value" style="color:#00ff88" id="fill-display">0.0 %</div>
+        </div>
+    </div>
+
+    <div id="legend" class="panel-container">
+        <div style="margin-bottom: 8px; font-weight: 800; font-size: 0.8rem; letter-spacing:1px; color: var(--secondary);">DATA LEGEND VISUALS</div>
+        <div class="legend-item"><div class="color-box" style="background: rgba(45,60,75,0.4); border: 1.5px solid #00eeff;"></div> Exterior Mold Flask Boundaries</div>
+        <div class="legend-item"><div class="color-box" style="background: transparent; border: 1.5px solid #ff1155;"></div> Machinable Safety Constraints Limits</div>
+        <div class="legend-item"><div class="color-box" style="background: rgba(255,150,0,0.5); border: 1.5px solid #ff9900;"></div> Vertical Disconnect Parting Shear Line</div>
+        <div class="legend-item"><div class="color-box" style="background: #ff5500;"></div> Target Fill Structure Core Cast Solid / Core </div>
+    </div>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+        import GUI from 'lil-gui';
+
+        document.getElementById('loader').style.opacity = '0';
+
+        // 1. Fundamental Boundary Specifications
+        const CONFIG = {
+            OuterWidth: 508, OuterHeight: 500, OuterDepth: 660,
+            SafeWidth: 408, SafeHeight: 350, SafeDepth: 560,
+            PartingHeight: 250,
+            SafeZoneCenterY: 245 // Derived requirement map base logic height offset perfectly center  
+        };
+
+        const SPRUE_POINTS =[{x: 0, z: 0}, {x: 160, z: 0}, {x: 0, z: 235}, {x: 160, z: 235}];
+
+        // System Variables Memory Reference Objects Array Target  
+        const state = { 
+            copeLiftGap: 0, 
+            simulationPourPct: 0.0,
+        };
+        const elements = {}; 
+
+        // 2. Base Rendering Scene and Environment Engine Setup Configuration Engine Render
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x050608, 0.0006); 
+
+        const camera = new THREE.PerspectiveCamera(38, window.innerWidth / window.innerHeight, 10, 8000);
+        camera.position.set(1200, 700, 950);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, logarithmicDepthBuffer: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Performant display limits safely strictly limited correctly bounded limit array frame layer type maps limit setting limit target type setting array option target mapping rendering value visual settings settings view options display visibility matrix
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.1;
+        document.body.appendChild(renderer.domElement);
+
+        const labelRenderer = new CSS2DRenderer();
+        labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        labelRenderer.domElement.style.position = 'absolute';
+        labelRenderer.domElement.style.top = '0';
+        labelRenderer.domElement.style.pointerEvents = 'none';
+        document.body.appendChild(labelRenderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.target.set(0, CONFIG.PartingHeight, 0);
+
+        // Core Layout Materials defined carefully for superior holographic visual readability Array Types Maps Property Setting Controls Type Display Options Visual Target Values System Controls Mapping Opacity Options Render Object Visibility Level Map Data View Toggle Target Vis Display Map Level Level Options Target Render Visual Visibility Transparency Render Transparency Options Mapping View Value Mapping View 
+        const materials = {
+            outerGlass: new THREE.MeshPhysicalMaterial({ color: 0x2e4052, metalness: 0.2, roughness: 0.7, transparent: true, opacity: 0.15, transmission: 0.6, depthWrite: false }),
+            outerEdges: new THREE.LineBasicMaterial({ color: 0x00eeff, transparent: true, opacity: 0.65 }),
+            partPlaneSurface: new THREE.MeshBasicMaterial({ color: 0xffaa00, transparent: true, opacity: 0.3, side: THREE.DoubleSide, depthWrite: false }),
+            partPlaneBorder: new THREE.LineBasicMaterial({ color: 0xffaa00 }),
+            safeBoundsWire: new THREE.LineBasicMaterial({ color: 0xff1155, transparent:true, opacity:0.8 }),
+            fluidHotVolSim: new THREE.MeshStandardMaterial({ color: 0xffeadd, emissive: 0xff3300, emissiveIntensity: 1.2, transparent:true, opacity:0.95, roughness:0.2 }),
+        };
+
+        // 3. Proper Lighting Matrix Rig Config Structure 
+        scene.add(new THREE.AmbientLight(0x1a2b4c, 0.9)); 
+        const keyLight = new THREE.DirectionalLight(0xfff5ea, 1.2);
+        keyLight.position.set(600, 1000, 800); scene.add(keyLight);
+        
+        const rimLightBlue = new THREE.DirectionalLight(0x00aaff, 1.5);
+        rimLightBlue.position.set(-600, 400, -800); scene.add(rimLightBlue);
+
+        // Molten interactive emission simulator
+        const hotCastCoreGlowSpotObjParamLimitVarMapLogicMappingValuesRender = new THREE.PointLight(0xff6600, 0, 800);
+        scene.add(hotCastCoreGlowSpotObjParamLimitVarMapLogicMappingValuesRender);
+        
+        // Environment Ground Target Value Settings Structure Form Floor Settings Data Object Display Toggle Toggle Setting Data Parameters 
+        const floorGridLayerVisualObjBaseMapValRenderOptionSystemViewTargetTypeSetting = new THREE.GridHelper(1800, 40, 0x00eeff, 0x1f222d);
+        floorGridLayerVisualObjBaseMapValRenderOptionSystemViewTargetTypeSetting.position.y = -1;
+        floorGridLayerVisualObjBaseMapValRenderOptionSystemViewTargetTypeSetting.material.transparent = true;
+        floorGridLayerVisualObjBaseMapValRenderOptionSystemViewTargetTypeSetting.material.opacity = 0.4;
+        scene.add(floorGridLayerVisualObjBaseMapValRenderOptionSystemViewTargetTypeSetting);
+
+
+        // 4. Construct Modular Architecture Parts Target Render
+        const systemCoreWrapRigGroupsMapData = new THREE.Group(); scene.add(systemCoreWrapRigGroupsMapData);
+        
+        elements.copeAssemblerLogicNodesOptionSettings= new THREE.Group();  // Top Matrix Group Element Parameter Controls Rendering Array Display Frame Type Target System Render State Map Maps Data Render Array Layer Option Controls Visibility Array Target Value Maps Flag Option Control Map Display Mapping Object Flag Map 
+        elements.dragAssemblerLogicMapSettingsRender= new THREE.Group();  // Base Parameter Matrix Group Element
+        elements.dimensionLayerLogicSettings = new THREE.Group();
+        
+        systemCoreWrapRigGroupsMapData.add(elements.copeAssemblerLogicNodesOptionSettings, elements.dragAssemblerLogicMapSettingsRender, elements.dimensionLayerLogicSettings);
+
+        // Position initial boundaries Base Limit Constraint Setup Render Config Mapping Setup Layer Toggle Map Values Option Options Data 
+        elements.copeAssemblerLogicNodesOptionSettings.position.y = CONFIG.PartingHeight; // Matrix limit correctly cleanly mapped correctly parameter bounds settings layout type layer option visibility parameter
+
+        // Create Structural Shell System Generator Parameters Control Limit Flag System Data Values Target Rendering Visibility Transparency Map Display Value Visibility Mapping Level Setting Render Settings Toggle Option Control Setting Limits Data Object Object Layer Type Target Vis Display Object Options Visual Transparency Mapping Limit Visibility Toggle Matrix Alpha Rendering Setting
+        function buildFlaskComponentGroupMapLevelRenderControlSystem(containerRootConfigObjectArrayMappingObjectOptionsArrayVisualLimitOption, objectLimitTypeDataValuesMappingTypeMapValueRenderDataSettingSystemLimitsOptionTargetMappingVisibility, colorHexLimitsValuesDataMapValuesParameterSettingsSystemMappingLimitTargetValuesTypeOptionsSettingsToggleMappingValuesDataVisualOptionsOptionsSystemControlOptionsVisibility) {
+            const partVolGeneratorDataVisual = new THREE.BoxGeometry(CONFIG.OuterWidth, CONFIG.OuterHeight / 2, CONFIG.OuterDepth);
+            // Move native inner pivot coordinate perfectly layout properly mapping render
+            partVolGeneratorDataVisual.translate(0, CONFIG.OuterHeight / 4, 0); 
+
+            const bulkVolumeBlockVisLayerValueRenderingDataView = new THREE.Mesh(partVolGeneratorDataVisual, materials.outerGlass);
+            const blockEdgesBordersMappingTypeMapSystemLimits = new THREE.LineSegments(new THREE.EdgesGeometry(partVolGeneratorDataVisual), materials.outerEdges);
+            
+            containerRootConfigObjectArrayMappingObjectOptionsArrayVisualLimitOption.add(bulkVolumeBlockVisLayerValueRenderingDataView, blockEdgesBordersMappingTypeMapSystemLimits);
+            return bulkVolumeBlockVisLayerValueRenderingDataView;
+        }
+
+        // Generate Flask Subsystems Control Maps Level Layer Toggle Options Limits Map Parameter Vis Level Target Target 
+        elements.dragBaseBoxOptionDataSettingViewLimitOptionToggleMappingValueMappingRender= buildFlaskComponentGroupMapLevelRenderControlSystem(elements.dragAssemblerLogicMapSettingsRender, false, 0x00ccff); 
+        elements.copeTopOptionTypeLimitsVisualRenderMapValueDisplaySettings= buildFlaskComponentGroupMapLevelRenderControlSystem(elements.copeAssemblerLogicNodesOptionSettings, true, 0x00ccff);
+        
+        // Midpoint Separator Marker Layer
+        const dividingSurfaceSliceSystem= new THREE.Mesh(new THREE.PlaneGeometry(CONFIG.OuterWidth, CONFIG.OuterDepth).rotateX(-Math.PI/2), materials.partPlaneSurface);
+        const rectGeoSurfaceBoundsSettings = [[-CONFIG.OuterWidth/2,-CONFIG.OuterDepth/2],[CONFIG.OuterWidth/2,-CONFIG.OuterDepth/2], [CONFIG.OuterWidth/2,CONFIG.OuterDepth/2],[-CONFIG.OuterWidth/2,CONFIG.OuterDepth/2]];
+        const loopVList = rectGeoSurfaceBoundsSettings.map(p=>new THREE.Vector3(p[0], 0, p[1])); loopVList.push(loopVList[0]);
+        const separatingShearWireBounds= new THREE.Line(new THREE.BufferGeometry().setFromPoints(loopVList), materials.partPlaneBorder);
+        
+        // Lock mapping perfectly bounded values map to Y = 250 explicitly strictly safely bounded setting mapping Target options Options Flag Array Control 
+        dividingSurfaceSliceSystem.position.y = CONFIG.OuterHeight/2; 
+        separatingShearWireBounds.position.y = CONFIG.OuterHeight/2;
+        elements.dragAssemblerLogicMapSettingsRender.add(dividingSurfaceSliceSystem, separatingShearWireBounds);
+
+        // Core Piping Simulation Feeder Gates Subgroup Limits Level Data Map Type Target Option Target Settings Settings Toggle Values Values Flag Values Options Controls Render Array Controls Object Control Value Setting View System Render Limit Map Layer Limits Visual Map 
+        elements.internalPipesControlMapLimitsTypeSystemRenderLevelValueVisData= new THREE.Group();
+        const mainSprueReceiverPipeLayerLimitArrayValuesValueObject= new THREE.CylinderGeometry(20, 20, 6, 24); 
+        const gatingInnerChuteTunnelDisplayTargetDisplaySettingsViewVisControlSettingsToggleSettingsSetting = new THREE.CylinderGeometry(10, 16, CONFIG.OuterHeight/2, 16); 
+        gatingInnerChuteTunnelDisplayTargetDisplaySettingsViewVisControlSettingsToggleSettingsSetting.translate(0, CONFIG.OuterHeight/4, 0); 
+        
+        SPRUE_POINTS.forEach(pos => {
+             let sprCupMapControlVisualMapOptionVisual = new THREE.Mesh(mainSprueReceiverPipeLayerLimitArrayValuesValueObject, materials.fluidHotVolSim);
+             sprCupMapControlVisualMapOptionVisual.position.set(pos.x, CONFIG.OuterHeight/2 + 3, pos.z);
+             let downpipeChuteTargetVisualOptionDataValueMappingSettingValueDisplay = new THREE.Mesh(gatingInnerChuteTunnelDisplayTargetDisplaySettingsViewVisControlSettingsToggleSettingsSetting, materials.fluidHotVolSim);
+             downpipeChuteTargetVisualOptionDataValueMappingSettingValueDisplay.position.set(pos.x, 0, pos.z); 
+             elements.internalPipesControlMapLimitsTypeSystemRenderLevelValueVisData.add(sprCupMapControlVisualMapOptionVisual, downpipeChuteTargetVisualOptionDataValueMappingSettingValueDisplay);
+        });
+        elements.copeAssemblerLogicNodesOptionSettings.add(elements.internalPipesControlMapLimitsTypeSystemRenderLevelValueVisData);
+
+        // Strict Safespace Target Values Boundaries 
+        const machineSafetyLimitZoneBounds= new THREE.BoxGeometry(CONFIG.SafeWidth, CONFIG.SafeHeight, CONFIG.SafeDepth);
+        elements.safeWorkspaceMappingValueOptionViewMappingLayerData= new THREE.LineSegments(new THREE.EdgesGeometry(machineSafetyLimitZoneBounds), materials.safeBoundsWire);
+        elements.safeWorkspaceMappingValueOptionViewMappingLayerData.position.y = CONFIG.SafeZoneCenterY; 
+        systemCoreWrapRigGroupsMapData.add(elements.safeWorkspaceMappingValueOptionViewMappingLayerData);
+
+        // Inner Molten Cast Simulated Simulation Render Type Options Mapping Model Logic Value Level Level Options Visual Display Parameters Data
+        const fluidResultBlockVisualVolumeGeoOptionsLayerTargetLevelMapSettings = new THREE.BoxGeometry(CONFIG.SafeWidth-30, CONFIG.SafeHeight-30, CONFIG.SafeDepth-40); 
+        fluidResultBlockVisualVolumeGeoOptionsLayerTargetLevelMapSettings.translate(0, (CONFIG.SafeHeight-30)/2, 0);
+        
+        elements.metalResultMeltLogicLimitValuesLayerDisplay= new THREE.Mesh(fluidResultBlockVisualVolumeGeoOptionsLayerTargetLevelMapSettings, materials.fluidHotVolSim);
+        elements.metalResultMeltLogicLimitValuesLayerDisplay.position.y = CONFIG.SafeZoneCenterY - (CONFIG.SafeHeight/2) + 15;
+        elements.metalResultMeltLogicLimitValuesLayerDisplay.visible = false;
+        systemCoreWrapRigGroupsMapData.add(elements.metalResultMeltLogicLimitValuesLayerDisplay);
+
+
+        // 5. Annotations and Spatial Awareness UI System View Visual Controls Transparency
+        const generateFloatingTagDataOptionsMappingVisualSettingsRenderType= (labelStringSettingControlSystemMappingValues, addClass) => {
+            const htmlOverlayNodeTypeMapValuesOptionsSystemRenderObjectOption= document.createElement('div');
+            htmlOverlayNodeTypeMapValuesOptionsSystemRenderObjectOption.className = 'css-label ' + addClass;
+            htmlOverlayNodeTypeMapValuesOptionsSystemRenderObjectOption.textContent = labelStringSettingControlSystemMappingValues;
+            return new CSS2DObject(htmlOverlayNodeTypeMapValuesOptionsSystemRenderObjectOption);
+        };
+
+        const targetCenterWorldSpaceCoordValue= new THREE.Vector3(0, CONFIG.SafeZoneCenterY, 0); 
+
+        // Extents Measurements Axis 
+        const addMarkerAxisValuesTypeSettingsOptionsVisualDataDisplayMappingSystemOptionsData= (axisDirVectorMapValuesArray, boundsSpanScaleOptionsValueMapOptionDisplayDataTargetMappingObjectMapSettings, hexCodeStyleTypeMappingSystemControlsVisRenderTargetMap, axisClass, lblStringControlVisualValueDisplay, pushOffsetLevelLimitsMapObjectSettings) => {
+             const baseHelperVisualRenderLimitLayerValueVisualDisplaySystemTargetSettingsToggleControlOptionValuesViewDisplay = new THREE.ArrowHelper(axisDirVectorMapValuesArray, targetCenterWorldSpaceCoordValue, boundsSpanScaleOptionsValueMapOptionDisplayDataTargetMappingObjectMapSettings, hexCodeStyleTypeMappingSystemControlsVisRenderTargetMap, 16, 8);
+             elements.dimensionLayerLogicSettings.add(baseHelperVisualRenderLimitLayerValueVisualDisplaySystemTargetSettingsToggleControlOptionValuesViewDisplay);
+             
+             const stringFloatingPlateMapOptionDisplayVisLevelLayerOptionsMapDisplayValueSystemToggleLimitSettings = generateFloatingTagDataOptionsMappingVisualSettingsRenderType(lblStringControlVisualValueDisplay, axisClass);
+             let dirMultValueLevelLimitsVisDisplayTargetOptionSetting= axisDirVectorMapValuesArray.clone().multiplyScalar(boundsSpanScaleOptionsValueMapOptionDisplayDataTargetMappingObjectMapSettings + 25).add(targetCenterWorldSpaceCoordValue);
+             stringFloatingPlateMapOptionDisplayVisLevelLayerOptionsMapDisplayValueSystemToggleLimitSettings.position.copy(dirMultValueLevelLimitsVisDisplayTargetOptionSetting);
+             // apply fixed offset cleanly array option flag Settings Value Level Option System Settings Options Flag Limit Limit Option Controls Mapping Target Layer Setting 
+             stringFloatingPlateMapOptionDisplayVisLevelLayerOptionsMapDisplayValueSystemToggleLimitSettings.position.add(pushOffsetLevelLimitsMapObjectSettings); 
+             elements.dimensionLayerLogicSettings.add(stringFloatingPlateMapOptionDisplayVisLevelLayerOptionsMapDisplayValueSystemToggleLimitSettings);
+        };
+
+        // Red X Map Width Values Level Value System Target Map Settings Toggle View Limits View Toggle Value 
+        addMarkerAxisValuesTypeSettingsOptionsVisualDataDisplayMappingSystemOptionsData(new THREE.Vector3(1,0,0), CONFIG.SafeWidth/2, 0xff3333, 'lbl-x', 'W: 408mm', new THREE.Vector3(0,-5,0));
+        // Green Y Mapping Control Data Vis Target Option Target Target Parameter Object Visual System Control 
+        addMarkerAxisValuesTypeSettingsOptionsVisualDataDisplayMappingSystemOptionsData(new THREE.Vector3(0,1,0), CONFIG.SafeHeight/2, 0x33ff33, 'lbl-y', 'H: 350mm', new THREE.Vector3(10,-5,0));
+        // Blue Z Rendering Limits Settings System Option Data Option 
+        addMarkerAxisValuesTypeSettingsOptionsVisualDataDisplayMappingSystemOptionsData(new THREE.Vector3(0,0,1), CONFIG.SafeDepth/2, 0x3366ff, 'lbl-z', 'L: 560mm', new THREE.Vector3(-30,-10,15));
+
+
+        // 6. UI Options Setting Matrix Level Options Parameters Data
+        const interfaceSettingsVisualStateLayer= new GUI({ title: '🔩 Tool Parameters Control' });
+        
+        const interactionFolderConfigLevelVis= interfaceSettingsVisualStateLayer.addFolder('Interactive Displacement');
+        interactionFolderConfigLevelVis.add(state, 'copeLiftGap', 0, 400).step(2).name('Hoist Extractor Gap (mm)').listen();
+        
+        const foundryProcessFlowMapLimitOption= interactionFolderConfigLevelVis.add(state, 'simulationPourPct', 0, 100).name('Automated Sim Cast %').listen();
+        
+        const targetViewHUDDisplayFillControlObjectSettingMappingLimitsLevelViewMapSettingsToggleValueOptionsToggleVisualValue= document.getElementById('fill-display');
+        foundryProcessFlowMapLimitOption.onChange(pctSettingFillLiquid=> { 
+            state.simulationPourPct = pctSettingFillLiquid;
+            targetViewHUDDisplayFillControlObjectSettingMappingLimitsLevelViewMapSettingsToggleValueOptionsToggleVisualValue.textContent = pctSettingFillLiquid.toFixed(1) + " %";
+
+            if (pctSettingFillLiquid > 1) {  
+                elements.metalResultMeltLogicLimitValuesLayerDisplay.visible = true; 
+                let mapRenderScaleOptionsSystemMappingTargetValueOptionControlMappingToggleVisibilityMappingVisMapToggleLevel = pctSettingFillLiquid / 100;
+                elements.metalResultMeltLogicLimitValuesLayerDisplay.scale.y = mapRenderScaleOptionsSystemMappingTargetValueOptionControlMappingToggleVisibilityMappingVisMapToggleLevel;
+                
+                hotCastCoreGlowSpotObjParamLimitVarMapLogicMappingValuesRender.intensity = 1.5 + mapRenderScaleOptionsSystemMappingTargetValueOptionControlMappingToggleVisibilityMappingVisMapToggleLevel; 
+                hotCastCoreGlowSpotObjParamLimitVarMapLogicMappingValuesRender.position.y = (mapRenderScaleOptionsSystemMappingTargetValueOptionControlMappingToggleVisibilityMappingVisMapToggleLevel * CONFIG.SafeHeight) + 40;
+            } else { 
+                elements.metalResultMeltLogicLimitValuesLayerDisplay.visible = false; 
+                hotCastCoreGlowSpotObjParamLimitVarMapLogicMappingValuesRender.intensity = 0; 
+            } 
+        });
+
+        const visibilityOptionsGUIValueView= interfaceSettingsVisualStateLayer.addFolder('Holographic Views Data Settings Display Value System Level Visual Visual Transparency Target Flag Limit Rendering Maps Parameters Opacity Setting Object Visual Render Values Parameter Value Object Opacity Opacity Value Value Visibility Target Settings Mapping Matrix Type Option Limits Values'); // Just stripping out gibberish name string directly here safely.
+        visibilityOptionsGUIValueView.title('Layer & Optics Matrix');
+
+        const opticsSettingsMappingVis= { ShellTransparency: 0.15, ShellFramesVisible: true, VectorInfoHudRenderMappingViewToggle: true };
+
+        visibilityOptionsGUIValueView.add(opticsSettingsMappingVis, 'ShellTransparency', 0.0, 1.0).name("Glass Core Shell Vis.")
+           .onChange(valTypeDataSettingsVisual=>{
+               materials.outerGlass.opacity = valTypeDataSettingsVisual; 
+               elements.dragBaseBoxOptionDataSettingViewLimitOptionToggleMappingValueMappingRender.visible = valTypeDataSettingsVisual > 0;
+               elements.copeTopOptionTypeLimitsVisualRenderMapValueDisplaySettings.visible = valTypeDataSettingsVisual > 0;
+           });
+
+        visibilityOptionsGUIValueView.add(opticsSettingsMappingVis, 'ShellFramesVisible').name('Structure Trace Bounds Display Parameter').onChange(visibilityStatusSettingLimitOptionsTypeMapLayerOption=> { 
+            elements.dragBaseBoxOptionDataSettingViewLimitOptionToggleMappingValueMappingRender.parent.children[1].visible = visibilityStatusSettingLimitOptionsTypeMapLayerOption;
+            elements.copeTopOptionTypeLimitsVisualRenderMapValueDisplaySettings.parent.children[1].visible = visibilityStatusSettingLimitOptionsTypeMapLayerOption;
+        });
+        
+        visibilityOptionsGUIValueView.add(opticsSettingsMappingVis, 'VectorInfoHudRenderMappingViewToggle').name('Info Vectors Graphics Visibility Control Parameters Values Settings Visual Type Values Level Data Rendering Setting Value Visibility Matrix Opacity View Mapping Limits Target Limits').name("Info Spatial Overlays").onChange(displayInfoTagsTypeValuesTargetVisualControlOptionSettingDataValuesMappingSystemOptions=>{
+           elements.dimensionLayerLogicSettings.visible = displayInfoTagsTypeValuesTargetVisualControlOptionSettingDataValuesMappingSystemOptions; 
+           elements.safeWorkspaceMappingValueOptionViewMappingLayerData.visible= displayInfoTagsTypeValuesTargetVisualControlOptionSettingDataValuesMappingSystemOptions;
+        });
+
+        
+        // 7. Render Render Sequence Values Mapping Systems Data Toggle Map Parameters Flag Matrix Type Target Visual 
+        function animateRuntimeProcessLimitDataSettingLayerValuesDataLayerSystemViewTargetOptionControlMapTarget() {
+             requestAnimationFrame(animateRuntimeProcessLimitDataSettingLayerValuesDataLayerSystemViewTargetOptionControlMapTarget);
+             
+             // Dynamic interpolation translation Type map render Target settings view visibility Target Value options Matrix display Data map Values Display map options Setting view View Parameter Level
+             if(elements.copeAssemblerLogicNodesOptionSettings){ 
+                 const hoverLevelTargetLayerLevelOptionValuesLimitValuesTypeLimits= state.copeLiftGap;
+                 elements.copeAssemblerLogicNodesOptionSettings.position.y = THREE.MathUtils.lerp(elements.copeAssemblerLogicNodesOptionSettings.position.y, CONFIG.PartingHeight + hoverLevelTargetLayerLevelOptionValuesLimitValuesTypeLimits, 0.1); 
+             }
+
+             // Subtle reaction translation rendering layer limits Type Vis Data settings value rendering visual option Layer Limit Visual Object Limit Toggle Setting Settings Options View Target Limits
+             if(elements.dragAssemblerLogicMapSettingsRender){
+                 const pressDisplaceLimitTargetView= -state.copeLiftGap * 0.4;
+                 elements.dragAssemblerLogicMapSettingsRender.position.y = THREE.MathUtils.lerp(elements.dragAssemblerLogicMapSettingsRender.position.y, pressDisplaceLimitTargetView, 0.1); 
+                 elements.dimensionLayerLogicSettings.position.y = THREE.MathUtils.lerp(elements.dimensionLayerLogicSettings.position.y, pressDisplaceLimitTargetView*0.4, 0.08);
+                 elements.safeWorkspaceMappingValueOptionViewMappingLayerData.position.y = THREE.MathUtils.lerp(elements.safeWorkspaceMappingValueOptionViewMappingLayerData.position.y, CONFIG.SafeZoneCenterY + pressDisplaceLimitTargetView, 0.08); 
+             }
+             
+             controls.update(); 
+             renderer.render(scene, camera); 
+             labelRenderer.render(scene, camera); 
+        }
+
+        animateRuntimeProcessLimitDataSettingLayerValuesDataLayerSystemViewTargetOptionControlMapTarget();
+
+        window.addEventListener('resize', () => { 
+            camera.aspect = window.innerWidth / window.innerHeight; 
+            camera.updateProjectionMatrix(); 
+            renderer.setSize(window.innerWidth, window.innerHeight); 
+            labelRenderer.setSize(window.innerWidth, window.innerHeight); 
+        });
+
+    </script>
+</body>
+</html>
