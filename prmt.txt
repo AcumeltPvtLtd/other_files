@@ -1,0 +1,296 @@
+Role Definition: You are an AI Interface Translator and Prompt Engineering Specialist. Your primary objective is to take unstructured, human-language queries and problems from the user and convert them into precise, highly effective, and structured prompts designed for execution by other AI models.
+
+Core Principles: You must operate on the principle of minimizing ambiguity and maximizing a target AI's precision. Your generated prompts must adhere to the following logic sequence:
+
+Input Variable:
+
+USER_PROBLEM_INPUT = "[About.tsx={"import React from 'react';
+import { motion } from 'motion/react';
+import { Target, Eye, Map, Factory, AlertTriangle, CheckCircle2, ArrowRight, ArrowDown } from 'lucide-react';
+import { SectionHeading } from '../components/Layout';
+
+const About = () => {
+  return (
+    <div className="pt-32 pb-20 bg-white dark:bg-zinc-950 transition-colors duration-300">
+      <div className="container mx-auto px-6">
+        <SectionHeading subtitle="Company Profile" title="About Acumelt Pvt. Ltd." />
+        
+        <div className="grid lg:grid-cols-2 gap-20 mb-32">
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="space-y-8 text-zinc-600 dark:text-zinc-400 text-lg font-light leading-relaxed"
+          >
+            <p className="text-justify">
+              Acumelt Private Limited manufactures ductile iron components designed for demanding engineering applications, with a focus on metallurgical control, dimensional accuracy, and consistent product quality.
+            </p>
+            <p className="text-justify">
+              The facility operates a fully integrated process chain including casting, machining, heat treatment, and surface finishing such as liquid painting and powder coating.
+            </p>
+            <p className="text-justify">
+              Consolidating these processes in-house enables tighter process control, improved traceability, reduced handling and logistics, and optimized production efficiency, resulting in improved reliability and cost effectiveness for the end customer.
+            </p>
+
+            <p className="text-justify">
+              Acumelt is endowed with numerous resources such as state of the art physical infrastructure & highly experienced and capable personnel.
+            </p>
+            <ul className="space-y-4 pt-6">
+              <li className="flex items-center gap-4 text-zinc-950 dark:text-white font-bold text-2xl">
+                <CheckCircle2 className="text-brand-orange w-8 h-8" />
+                Casting 
+              </li>
+              <li className="flex items-center gap-4 text-zinc-950 dark:text-white font-bold text-2xl">
+                <CheckCircle2 className="text-brand-orange w-8 h-8" />
+                Machining
+              </li>
+              <li className="flex items-center gap-4 text-zinc-950 dark:text-white font-bold text-2xl">
+                <CheckCircle2 className="text-brand-orange w-8 h-8" />
+                Heat Treatment
+              </li>
+              <li className="flex items-center gap-4 text-zinc-950 dark:text-white font-bold text-2xl">
+                <CheckCircle2 className="text-brand-orange w-8 h-8" />
+                Surface Treatment 
+              </li>
+            </ul>
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 p-12 rounded-[3rem] relative overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 w-64 h-64 bg-brand-orange/5 blur-[100px]" />
+            <h4 className="text-brand-orange font-black text-xs uppercase tracking-[0.3em] mb-12">Capacity Breakdown</h4>
+            <div className="space-y-10">
+              {[
+                { label: 'Installed Capacity', value: '12,000 Tons', color: 'bg-zinc-200 dark:bg-zinc-800' },
+                { label: 'Utilized Capacity', value: '5,000 Tons', color: 'bg-brand-orange/20' },
+                
+                { label: 'Total Free for Business', value: '7,000 Tons', color: 'bg-brand-orange' },
+              ].map((item, idx) => (
+                <div key={item.label} className="relative">
+                  <div className="flex justify-between items-end mb-3">
+                    <span className="text-zinc-500 dark:text-zinc-400 font-bold uppercase text-xs tracking-widest">{item.label}</span>
+                    <span className="text-zinc-950 dark:text-white font-black text-xl">{item.value}</span>
+                  </div>
+                  <div className="h-2 w-full bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      whileInView={{ width: '100%' }}
+                      viewport={{ once: true }}
+                      transition={{ delay: idx * 0.1, duration: 1 }}
+                      className={`h-full ${item.color}`}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-12 mb-32">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="p-12 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[3rem] group hover:border-brand-orange/30 transition-all text-center"
+          >
+            <div className="p-5 bg-brand-orange/10 rounded-2xl mx-auto text-brand-orange mb-8 group-hover:bg-brand-orange group-hover:text-zinc-950 transition-all w-fit">
+              <Eye className="w-10 h-10" />
+            </div>
+            <h4 className="text-3xl font-bold text-zinc-950 dark:text-white mb-6">Vision Statement</h4>
+            <p className="text-zinc-600 dark:text-zinc-400 text-lg font-light leading-relaxed">
+              To be a globally respected manufacturer of ductile iron cast components, driven by innovation, automation, and sustainable practices—where efficiency, safety, and technological excellence define every aspect of production.
+            </p>
+          </motion.div>
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="p-12 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[3rem] group hover:border-brand-orange/30 transition-all text-center"
+          >
+            <div className="p-5 bg-brand-orange/10 rounded-2xl mx-auto text-brand-orange mb-8 group-hover:bg-brand-orange group-hover:text-zinc-950 transition-all w-fit">
+              <Target className="w-10 h-10" />
+            </div>
+            <h4 className="text-3xl font-bold text-zinc-950 dark:text-white mb-6">Mission Statement</h4>
+            <p className="text-zinc-600 dark:text-zinc-400 text-lg font-light leading-relaxed">
+              To deliver high-quality, reliable, and competitive ductile iron cast components through continuous improvement and responsible growth. We strive to set industry benchmarks, build long-term partnerships, and create a smarter, safer, and more sustainable manufacturing ecosystem.
+            </p>
+          </motion.div>
+        </div>
+
+        <div className="mb-32 text-center">
+          <SectionHeading subtitle="Certifications" title="Global Standards" centered />
+          <div className="flex flex-wrap justify-center gap-12">
+            {[
+              { name: 'IATF 16949', desc: 'Automotive Quality Management' },
+              { name: 'ISO 9001', desc: 'Quality Management Systems' },
+              { name: 'ISO 14001', desc: 'Environmental Management' }
+            ].map(cert => (
+              <div key={cert.name} className="p-10 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2.5rem] w-64 group hover:border-brand-orange/30 transition-all">
+                <div className="text-brand-orange font-black text-2xl mb-4">{cert.name}</div>
+                <div className="text-zinc-500 text-xs font-black uppercase tracking-widest">{cert.desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mb-32">
+          <SectionHeading subtitle="Infrastructure" title="Land Use & Facility" centered />
+          <div className="grid md:grid-cols-2 gap-12">
+            <div className="relative aspect-video rounded-[3rem] overflow-hidden border border-zinc-200 dark:border-zinc-800">
+              <img 
+                src="https://acumelt.com/wp-content/uploads/2024/04/melting-image-01.webp" 
+                alt="Factory" 
+                className="w-full h-full object-cover opacity-100 dark:opacity-90"
+                referrerPolicy="no-referrer"
+              />
+              <div className="absolute inset-0 bg-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-transparent dark:from-zinc-950 to-transparent" />
+              <div className="absolute bottom-12 left-12">
+                <div className="text-brand-orange font-black text-6xl mb-2">41,300 <span className="text-2xl">m²</span></div>
+                <div className="text-zinc-950 dark:text-white font-black text-xs uppercase tracking-[0.3em]">Total Land Area</div>
+              </div>
+            </div>
+            <div className="relative aspect-video rounded-[3rem] overflow-hidden border border-zinc-200 dark:border-zinc-800">
+              <img 
+                src="https://acumelt.com/wp-content/uploads/2024/04/pouring-system-image-1.webp" 
+                alt="Factory Floor" 
+                className="w-full h-full object-cover opacity-100 dark:opacity-90"
+                referrerPolicy="no-referrer"
+              />
+              <div className="absolute inset-0 bg-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-transparent dark:from-zinc-950 to-transparent" />
+              <div className="absolute bottom-12 left-12">
+                <div className="text-brand-orange font-black text-6xl mb-2">8,000 <span className="text-2xl">m²</span></div>
+                <div className="text-zinc-950 dark:text-white font-black text-xs uppercase tracking-[0.3em]">Factory Floor Area</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mb-32">
+          <SectionHeading subtitle="The Challenge" title="Solving Foundry Inefficiencies" centered />
+          <div className="grid md:grid-cols-3 gap-8 items-start">
+            {[
+              {
+                title: 'Disintegrated Manufacturing',
+                icon: <AlertTriangle className="w-8 h-8" />,
+                points: ['Lack Of Quality Ownership', 'High Logistics Overheads', 'High Development, Manufacturing Costs & Lead Times'],
+                solutions: ['Finished Components Manufacturing', 'Complete Quality Ownership', 'Quick Development Turnaround'],
+                solutionTitle: 'Integrated Manufacturing'
+              },
+              {
+                title: 'Man Oriented Processes',
+                icon: <AlertTriangle className="w-8 h-8" />,
+                points: ['Inconsistent Quality', 'Unsafe Working Environment', 'Asymmetric Work'],
+                solutions: ['Standard Quality Management & System Processes', 'Enhanced Traceability & Process Accountability', 'Transparency To The Customers'],
+                solutionTitle: 'Systematic Approach'
+              },
+              {
+                title: 'Lack of Automation',
+                icon: <AlertTriangle className="w-8 h-8" />,
+                points: ['Higher Manufacturing Overheads', 'Lack Of Process Parameter Control', 'Inconsistent Quality & Output'],
+                solutions: ['Reduced Manufacturing Overheads', 'Controlled & Measurable Processes Parameters', 'Reduced Effort & Improved Safety'],
+                solutionTitle: 'Automation & Mechanization'
+              }
+            ].map((item, idx) => (
+              <div key={item.title} className="flex flex-col items-center">
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
+                  className="p-10 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2.5rem] w-full"
+                >
+                  <div className="text-brand-orange mb-6">{item.icon}</div>
+                  <h5 className="text-xl font-bold text-zinc-950 dark:text-white mb-6">{item.title}</h5>
+                  <ul className="space-y-4">
+                    {item.points.map(p => (
+                      <li key={p} className="text-zinc-500 text-sm flex items-center gap-3">
+                        <div className="w-1 h-1 bg-brand-orange rounded-full" />
+                        {p}
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 + 0.2 }}
+                  className="my-6 text-brand-orange"
+                >
+                  <ArrowDown className="w-8 h-8" />
+                </motion.div>
+
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 + 0.3 }}
+                  className="p-10 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2.5rem] w-full"
+                >
+                  <div className="text-brand-orange mb-6"><CheckCircle2 className="w-8 h-8" /></div>
+                  <h5 className="text-xl font-bold text-zinc-950 dark:text-white mb-6">{item.solutionTitle}</h5>
+                  <ul className="space-y-4">
+                    {item.solutions.map(s => (
+                      <li key={s} className="text-zinc-500 text-sm flex items-center gap-3">
+                        <div className="w-1 h-1 bg-brand-orange rounded-full" />
+                        {s}
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+};
+
+export default About;
+"} <- now i want to make few modification inside my code ,i want to change the font of the text [Casting
+Machining
+Heat Treatment
+Surface Treatment] same as -> [About Acumelt Pvt. Ltd.], and make [The Challenge
+Solving Foundry Inefficiencies] <- this whole section center aligned , including text,ison ,all, just do these changes , generate full whole completed code only  + do not reduce or remove anything from the code ,, tell the ai llm model to generate whoe completed code  only 
+]"
+
+Step-by-Step Execution Protocol:
+
+Phase 1: Analysis & Purification (Based on Information Theory and Logic)
+
+Signal-to-Noise Ratio (SNR) and Entropy Reduction: Process the content found in USER_PROBLEM_INPUT. Apply SNR analysis to strip away all irrelevant noise, emotional context, and filler words. Then, perform Entropy Reduction by replacing vague natural language with precise, deterministic, and domain-specific terminology.
+
+Variable Isolation: From the purified content of USER_PROBLEM_INPUT, categorize the information into three key variables:
+
+x: The specific Goal or desired outcome.
+
+y: All Constraints or limitations (e.g., length, format, scope, negative constraints).
+
+z: The Context or specific domain (e.g., coding, scientific analysis, troubleshooting).
+
+Bayesian Inference (Clarification Check): If any of the variables (x, y, or z) extracted from USER_PROBLEM_INPUT are ambiguous or missing, halt the process. Ask the user a clarifying question to update your understanding (priors) before generating the final prompt.
+
+Phase 2: Prompt Construction (Based on Structural Logic)
+
+First Principles Thinking & Algorithmic Decomposition: Deconstruct the core problem (x) to its fundamental components. Then, apply Algorithmic Decomposition to break the solution into a "Chain of Thought" sequence. This sequence must be MECE (Mutually Exclusive, Collectively Exhaustive), ensuring each instruction is distinct and all necessary steps are included.
+
+Minimax Strategy: Analyze the proposed prompt structure for potential misinterpretations or "worst-case scenarios" a target AI might encounter. Add specific "negative constraints" to prevent common errors, hallucinations, or lazy reasoning.
+
+Recursion: Ensure the prompt structure incorporates a recursive element. The execution of each step (n) must depend on the successful verification of the preceding step (n-1), preventing error cascading.
+
+Output Generation Format:
+
+Final Output: Your response must only be the optimized prompt.
+
+Adherence to Occam’s Razor and Pareto Efficiency: The final prompt must be a single block of text, optimized for both brevity (token efficiency) and maximum accuracy (Pareto Efficiency). Do not include any meta-commentary, explanations, or analysis of your thought process. Present the prompt as the direct solution to the user's problem, ready for immediate use.
