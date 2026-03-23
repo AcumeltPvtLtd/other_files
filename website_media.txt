@@ -1,0 +1,197 @@
+PS C:\Users\aa\Pictures\website> ls
+
+
+    Directory: C:\Users\aa\Pictures\website
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----         3/23/2026   4:16 PM                core_shop
+d-----         3/23/2026   4:20 PM                fettling_machine
+d-----         3/23/2026   4:15 PM                machine_shop
+d-----         3/23/2026   4:21 PM                melting
+d-----         3/23/2026   4:21 PM                moldbox
+d-----         3/23/2026   3:55 PM                pouring
+d-----         3/23/2026   4:21 PM                pouring_line
+d-----         3/23/2026   3:54 PM                pre-heat-treatment
+d-----         3/23/2026   4:19 PM                product
+d-----         3/23/2026   4:10 PM                scrape
+d-----         3/23/2026   4:22 PM                shot_blasting
+-a----         3/23/2026   3:51 PM         362874 70328.jpeg
+-a----         3/23/2026   4:06 PM         196420 casting_hanging.jpeg
+-a----         3/23/2026   4:06 PM         238954 csating_hanging_2.jpeg
+-a----         3/23/2026   3:51 PM         523448 plan2.jpeg
+-a----         3/23/2026   3:50 PM         407481 plant.jpeg
+
+
+PS C:\Users\aa\Pictures\website> ls core_shop
+
+
+    Directory: C:\Users\aa\Pictures\website\core_shop
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----         3/23/2026   4:05 PM         230210 core_shop1.jpeg
+-a----         3/23/2026   4:05 PM         248176 core_shop2.jpeg
+-a----         3/23/2026   4:05 PM         197068 core_shop3.jpeg
+-a----         3/23/2026   3:58 PM         197149 core_shop_owen.jpeg
+
+
+PS C:\Users\aa\Pictures\website> ls fettling_machine
+
+
+    Directory: C:\Users\aa\Pictures\website\fettling_machine
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----         3/23/2026   3:50 PM         311710 machin1.jpeg
+-a----         3/23/2026   3:50 PM         293758 machine2.jpeg
+-a----         3/23/2026   3:57 PM        3327041 v1.mp4
+-a----         3/23/2026   3:57 PM       17733998 v2.mp4
+-a----         3/23/2026   3:58 PM        4966444 v3.mp4
+-a----         3/23/2026   3:58 PM       33985587 v4.mp4
+
+
+PS C:\Users\aa\Pictures\website> ls machine_shop
+
+
+    Directory: C:\Users\aa\Pictures\website\machine_shop
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----         3/23/2026   3:49 PM         200666 70375.jpeg
+-a----         3/23/2026   3:49 PM         198797 70376.jpeg
+-a----         3/23/2026   3:49 PM         180160 70377.jpeg
+
+
+PS C:\Users\aa\Pictures\website> ls melting
+
+
+    Directory: C:\Users\aa\Pictures\website\melting
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----         3/23/2026   4:05 PM         231381 1.jpeg
+-a----         3/23/2026   4:05 PM         156022 2.jpeg
+-a----         3/23/2026   4:06 PM         165820 3.jpeg
+
+
+PS C:\Users\aa\Pictures\website> ls moldbox
+
+
+    Directory: C:\Users\aa\Pictures\website\moldbox
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----         3/23/2026   3:56 PM         217054 moldbox_with_core.jpeg
+
+
+PS C:\Users\aa\Pictures\website> ls pouring
+
+
+    Directory: C:\Users\aa\Pictures\website\pouring
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----         3/23/2026   3:51 PM         159108 70345.jpeg
+-a----         3/23/2026   3:51 PM        9726329 70349.mp4
+-a----         3/23/2026   3:51 PM         339234 70358.jpeg
+-a----         3/23/2026   3:52 PM         286658 70361.jpeg
+-a----         3/23/2026   3:51 PM         289719 70363.jpeg
+-a----         3/23/2026   3:50 PM        9309847 70364.mp4
+-a----         3/23/2026   3:50 PM         169589 70369.jpeg
+-a----         3/23/2026   3:50 PM         143895 70370.jpeg
+
+
+PS C:\Users\aa\Pictures\website> ls pouring_line
+
+
+    Directory: C:\Users\aa\Pictures\website\pouring_line
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----         3/23/2026   4:05 PM         222756 1.jpeg
+-a----         3/23/2026   4:05 PM         222617 2.jpeg
+-a----         3/23/2026   4:05 PM         208620 3.jpeg
+-a----         3/23/2026   4:05 PM         209524 4.jpeg
+-a----         3/23/2026   4:06 PM         172025 5.jpeg
+-a----         3/23/2026   4:06 PM         200111 6.jpeg
+-a----         3/23/2026   4:06 PM         230656 7.jpeg
+
+
+PS C:\Users\aa\Pictures\website> ls pre-heat-treatment
+
+
+    Directory: C:\Users\aa\Pictures\website\pre-heat-treatment
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----         3/23/2026   3:51 PM       11106472 70334.mp4
+-a----         3/23/2026   3:51 PM         218947 70335.jpeg
+-a----         3/23/2026   3:51 PM         224673 70336.jpeg
+
+
+PS C:\Users\aa\Pictures\website> ls product
+
+
+    Directory: C:\Users\aa\Pictures\website\product
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----         3/23/2026   3:56 PM         252944 1.jpeg
+-a----         3/23/2026   4:03 PM         255084 10.jpeg
+-a----         3/23/2026   4:03 PM         155282 11.jpeg
+-a----         3/23/2026   4:03 PM         210987 12.jpeg
+-a----         3/23/2026   4:03 PM         225998 13.jpeg
+-a----         3/23/2026   4:03 PM         178591 14.jpeg
+-a----         3/23/2026   4:03 PM         112824 15.jpeg
+-a----         3/23/2026   4:03 PM         143276 16.jpeg
+-a----         3/23/2026   4:03 PM         156733 17.jpeg
+-a----         3/23/2026   4:03 PM         176717 18.jpeg
+-a----         3/23/2026   4:04 PM         154496 19.jpeg
+-a----         3/23/2026   3:59 PM         107803 2.jpeg
+-a----         3/23/2026   4:04 PM         156733 20.jpeg
+-a----         3/23/2026   4:04 PM         176717 21.jpeg
+-a----         3/23/2026   4:03 PM         154496 22.jpeg
+-a----         3/23/2026   4:03 PM         190534 23.jpeg
+-a----         3/23/2026   4:04 PM         133895 24.jpeg
+-a----         3/23/2026   4:04 PM         206426 25.jpeg
+-a----         3/23/2026   4:03 PM         206426 26.jpeg
+-a----         3/23/2026   4:04 PM         220238 27.jpeg
+-a----         3/23/2026   4:04 PM         187575 28.jpeg
+-a----         3/23/2026   4:04 PM         152264 29.jpeg
+-a----         3/23/2026   4:03 PM         189190 3.jpeg
+-a----         3/23/2026   4:04 PM         174877 30.jpeg
+-a----         3/23/2026   4:05 PM         145563 31.jpeg
+-a----         3/23/2026   4:05 PM          68711 32.jpeg
+-a----         3/23/2026   4:04 PM         195348 33.jpeg
+-a----         3/23/2026   4:05 PM          81592 34.jpeg
+-a----         3/23/2026   4:05 PM         106440 35.jpeg
+-a----         3/23/2026   4:03 PM         242027 4.jpeg
+-a----         3/23/2026   4:03 PM         142522 5.jpeg
+-a----         3/23/2026   4:03 PM         180971 6.jpeg
+-a----         3/23/2026   4:03 PM         246564 7.jpeg
+-a----         3/23/2026   4:03 PM         253933 8.jpeg
+-a----         3/23/2026   4:03 PM         174918 9.jpeg
+
+
+PS C:\Users\aa\Pictures\website> ls scrape
+PS C:\Users\aa\Pictures\website> ls shot_blasting
+
+
+    Directory: C:\Users\aa\Pictures\website\shot_blasting
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----         3/23/2026   4:05 PM         201543 2.jpeg
+-a----         3/23/2026   3:51 PM         379140 70331.jpeg
