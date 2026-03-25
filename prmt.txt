@@ -1,81 +1,87 @@
+aa@Admin MINGW64 ~/Pictures/website (main)
 $ ls -R
 .:
-A_LINKS.txt        moldbox/       plant.jpeg           scrape/
-core_shop/         molding_line/  pouring/             shot_blasting/
-fettling_machine/  other/         pouring_line/
-machine_shop/      paint_shop/    pre-heat-treatment/
-melting/           plan2.jpeg     product/
+A_LINKS.txt        heat_treatment/  microscope_lab/  paint_shop/    pre-heat-treatment/  sand_plant/     ultra_sonic/
+core_shop/         machine_shop/    moldbox/         plan2.jpeg     product/             scrape/         unnamed.webp
+dust_extraction/   melting/         molding_line/    pouring/       quality/             shot_blasting/
+fettling_machine/  micro_lab/       other/           pouring_line/  sand_lab/            spectrometer/
 
 ./core_shop:
-153f0def-6ab2-481a-9708-4a5ef8003c12.jpg  core_shop1.jpeg  core_shop_owen.jpeg
-b5edc6c5-cfb6-4678-8e45-4f4d6aa85951.jpg  core_shop2.jpeg
-c40908b3-dd26-4fa3-b3f9-380adb3893f5.jpg  core_shop3.jpeg
+153f0def-6ab2-481a-9708-4a5ef8003c12.jpg  c40908b3-dd26-4fa3-b3f9-380adb3893f5.jpg  core_shop1.jpeg  core_shop3.jpeg
+b5edc6c5-cfb6-4678-8e45-4f4d6aa85951.jpg  core_dryer.jpg                            core_shop2.jpeg  core_shop_owen.jpeg
+
+./dust_extraction:
+dust-extraction-image.webp  fume-extraction-image-01.webp
 
 ./fettling_machine:
-machin1.jpeg  machine2.jpeg  v1.mp4  v2.mp4  v3.mp4  v4.mp4
+fettling_machine.jpg  machin1.jpeg  machine2.jpeg  unnamed.webp  v1.mp4  v2.mp4  v3.mp4  v4.mp4
+
+./heat_treatment:
+heat_treatment_plant.jpg
 
 ./machine_shop:
-70375.jpeg  70377.jpeg                   Doosan_DNM_500_II_.mp4
-70376.jpeg  Cast_iron_face_on_lathe.mp4  shaping_cast_iron_by_cnc.mp4
+70375.jpeg  70376.jpeg  70377.jpeg  Cast_iron_face_on_lathe.mp4  Doosan_DNM_500_II_.mp4  shaping_cast_iron_by_cnc.mp4  unnamed.webp
 
 ./melting:
-1.jpeg  34bdb9f7-c8e5-4e4d-9a4c-aed7071e4390.jpg
-2.jpeg  e80ee277-cd03-42d7-a989-662cd28c3a34.jpg
-3.jpeg
+1.jpeg  2.jpeg  3.jpeg  34bdb9f7-c8e5-4e4d-9a4c-aed7071e4390.jpg  e80ee277-cd03-42d7-a989-662cd28c3a34.jpg  melting-image-01.webp
+
+./micro_lab:
+micro.jpg
+
+./microscope_lab:
+micro-structure-analysis-image-2.webp
 
 ./moldbox:
 moldbox_with_core.jpeg  molding_process_1.mp4  molding_process_2.mp4
 
 ./molding_line:
-804438f1-ad2c-4d95-9a73-86a035cc14b9.jpg
-fd2c86d7-4680-451d-afe0-1210222d2133.jpg
+804438f1-ad2c-4d95-9a73-86a035cc14b9.jpg  fd2c86d7-4680-451d-afe0-1210222d2133.jpg  molding-image-1-1024x906.webp
 
 ./other:
-27b47e51-eaa6-4ea5-bd1e-8e146c39cdf3.jpg  casting_hanging.jpeg
-57abafa6-d835-414f-bc57-8fbf7740f909.jpg  csating_hanging_2.jpeg
-c9348b9e-f923-42d5-a57d-bce47cc16d2d.jpg
+27b47e51-eaa6-4ea5-bd1e-8e146c39cdf3.jpg  c9348b9e-f923-42d5-a57d-bce47cc16d2d.jpg  csating_hanging_2.jpeg
+57abafa6-d835-414f-bc57-8fbf7740f909.jpg  casting_hanging.jpeg
 
 ./paint_shop:
-0b83ca38-e603-45c2-b379-a65cfd53dbd2.jpg
-17fea983-9f6f-4499-b28f-0124bd349ee9.jpg
-21c23c95-bbe5-489b-af0c-17847f32ae10.jpg
-23238dec-bd6f-45f7-918d-f577ea413946.jpg
-354467de-d770-4d97-b8bd-6b3a0ce6a967.jpg
-ba04a35f-6783-4dad-836f-8a2d7b29f3d6.jpg
-d37cb9c9-a85a-4a93-8c83-af2ecd41417e.jpg
-e23fdfbd-566d-4ab1-bdf9-7971afd654a4.jpg
+0b83ca38-e603-45c2-b379-a65cfd53dbd2.jpg  23238dec-bd6f-45f7-918d-f577ea413946.jpg  d37cb9c9-a85a-4a93-8c83-af2ecd41417e.jpg
+17fea983-9f6f-4499-b28f-0124bd349ee9.jpg  354467de-d770-4d97-b8bd-6b3a0ce6a967.jpg  e23fdfbd-566d-4ab1-bdf9-7971afd654a4.jpg
+21c23c95-bbe5-489b-af0c-17847f32ae10.jpg  ba04a35f-6783-4dad-836f-8a2d7b29f3d6.jpg
 
 ./pouring:
-47d80254-4ea3-4757-9dfe-b9ce9c3b9142.jpg
-5d128ff1-8409-4a1a-9364-b9a7047335c9.jpg
-70345.jpeg
-70349.mp4
-70358.jpeg
-70361.jpeg
-70363.jpeg
-70364.mp4
-70369.jpeg
-70370.jpeg
-9cb6956e-4159-44fa-a2e3-13284fe88e73.jpg
-d9b7e638-e610-4e40-b974-ac61c60e94d0.jpg
+47d80254-4ea3-4757-9dfe-b9ce9c3b9142.jpg  70358.jpeg  70369.jpeg                                pauring-system-image-1-768x679.webp
+5d128ff1-8409-4a1a-9364-b9a7047335c9.jpg  70361.jpeg  70370.jpeg                                pouring_system.jpg
+70345.jpeg                                70363.jpeg  9cb6956e-4159-44fa-a2e3-13284fe88e73.jpg  unnamed.webp
+70349.mp4                                 70364.mp4   d9b7e638-e610-4e40-b974-ac61c60e94d0.jpg
 
 ./pouring_line:
-1.jpeg  3.jpeg  5.jpeg  7.jpeg      b8bf61b6-4763-48f8-be83-00a64ea029c7.jpg
-2.jpeg  4.jpeg  6.jpeg  70328.jpeg
+1.jpeg  2.jpeg  3.jpeg  4.jpeg  5.jpeg  6.jpeg  7.jpeg  70328.jpeg  b8bf61b6-4763-48f8-be83-00a64ea029c7.jpg  unnamed.webp
 
 ./pre-heat-treatment:
 70334.mp4  70335.jpeg  70336.jpeg
 
 ./product:
-1.jpeg   13.jpeg  17.jpeg  20.jpeg  24.jpeg  28.jpeg  31.jpeg  35.jpeg  7.jpeg
-10.jpeg  14.jpeg  18.jpeg  21.jpeg  25.jpeg  29.jpeg  32.jpeg  4.jpeg   8.jpeg
-11.jpeg  15.jpeg  19.jpeg  22.jpeg  26.jpeg  3.jpeg   33.jpeg  5.jpeg   9.jpeg
-12.jpeg  16.jpeg  2.jpeg   23.jpeg  27.jpeg  30.jpeg  34.jpeg  6.jpeg
+1.jpeg   12.jpeg  15.jpeg  18.jpeg  20.jpeg  23.jpeg  26.jpeg  29.jpeg  31.jpeg  34.jpeg  5.jpeg  8.jpeg
+10.jpeg  13.jpeg  16.jpeg  19.jpeg  21.jpeg  24.jpeg  27.jpeg  3.jpeg   32.jpeg  35.jpeg  6.jpeg  9.jpeg
+11.jpeg  14.jpeg  17.jpeg  2.jpeg   22.jpeg  25.jpeg  28.jpeg  30.jpeg  33.jpeg  4.jpeg   7.jpeg
+
+./quality:
+both_machine.jpg  physical-testing-image-01-768x679.webp  physical-testing-image-1-768x679.webp
+
+./sand_lab:
+sand-testing-image-1-768x679.webp
+
+./sand_plant:
+Sand-plant-image-1-768x679.webp
 
 ./scrape:
 88ff8f59-a499-42c2-b79d-4f60d29dc64f.jpg
 
 ./shot_blasting:
-2.jpeg  64a08d62-a58b-437d-9916-6e2c5e1d509e.jpg  70331.jpeg
+2.jpeg  64a08d62-a58b-437d-9916-6e2c5e1d509e.jpg  70331.jpeg  shot_blasting.jpg
+
+./spectrometer:
+chemical-analysis-image-1-1.webp  spectro.jpg
+
+./ultra_sonic:
+34.jpg
 
 aa@Admin MINGW64 ~/Pictures/website (main)
