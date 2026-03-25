@@ -1,300 +1,81 @@
-Role Definition: You are an AI Interface Translator and Prompt Engineering Specialist. Your primary objective is to take unstructured, human-language queries and problems from the user and convert them into precise, highly effective, and structured prompts designed for execution by other AI models.
-
-Core Principles: You must operate on the principle of minimizing ambiguity and maximizing a target AI's precision. Your generated prompts must adhere to the following logic sequence:
-
-Input Variable:
-
-USER_PROBLEM_INPUT = "[my uploaded content and folder/file structure and name ={PS C:\Users\aa\Pictures\website> ls
-
-
-    Directory: C:\Users\aa\Pictures\website
-
-
-Mode                 LastWriteTime         Length Name
-----                 -------------         ------ ----
-d-----         3/25/2026   8:38 AM                core_shop
-d-----         3/23/2026   4:20 PM                fettling_machine
-d-----         3/25/2026   8:49 AM                machine_shop
-d-----         3/25/2026   8:38 AM                melting
-d-----         3/25/2026   9:00 AM                moldbox
-d-----         3/25/2026   8:38 AM                molding_line
-d-----         3/25/2026   8:39 AM                other
-d-----         3/25/2026   8:37 AM                paint_shop
-d-----         3/25/2026   8:39 AM                pouring
-d-----         3/25/2026   8:39 AM                pouring_line
-d-----         3/23/2026   3:54 PM                pre-heat-treatment
-d-----         3/23/2026   4:19 PM                product
-d-----         3/25/2026   8:38 AM                scrape
-d-----         3/25/2026   8:38 AM                shot_blasting
--a----         3/25/2026   8:49 AM            196 A_LINKS.txt
--a----         3/23/2026   3:51 PM         523448 plan2.jpeg
--a----         3/23/2026   3:50 PM         407481 plant.jpeg
-
-
-PS C:\Users\aa\Pictures\website> ls core_shop
-
-
-    Directory: C:\Users\aa\Pictures\website\core_shop
-
-
-Mode                 LastWriteTime         Length Name
-----                 -------------         ------ ----
--a----         3/25/2026   8:38 AM         197068 153f0def-6ab2-481a-9708-4a5ef8003c12.jpg
--a----         3/25/2026   8:37 AM         248176 b5edc6c5-cfb6-4678-8e45-4f4d6aa85951.jpg
--a----         3/25/2026   8:37 AM         230210 c40908b3-dd26-4fa3-b3f9-380adb3893f5.jpg
--a----         3/23/2026   4:05 PM         230210 core_shop1.jpeg
--a----         3/23/2026   4:05 PM         248176 core_shop2.jpeg
--a----         3/23/2026   4:05 PM         197068 core_shop3.jpeg
--a----         3/23/2026   3:58 PM         197149 core_shop_owen.jpeg
-
-
-PS C:\Users\aa\Pictures\website> ls machine_shop
-
-
-    Directory: C:\Users\aa\Pictures\website\machine_shop
-
-
-Mode                 LastWriteTime         Length Name
-----                 -------------         ------ ----
--a----         3/23/2026   3:49 PM         200666 70375.jpeg
--a----         3/23/2026   3:49 PM         198797 70376.jpeg
--a----         3/23/2026   3:49 PM         180160 70377.jpeg
--a----         3/25/2026   8:49 AM        1091015 Cast_iron_face_on_lathe.mp4
--a----         3/25/2026   8:49 AM        4621825 Doosan_DNM_500_II_.mp4
--a----         3/25/2026   8:49 AM        3634989 shaping_cast_iron_by_cnc.mp4
-
-
-PS C:\Users\aa\Pictures\website> ls melting
-
-
-    Directory: C:\Users\aa\Pictures\website\melting
-
-
-Mode                 LastWriteTime         Length Name
-----                 -------------         ------ ----
--a----         3/23/2026   4:05 PM         231381 1.jpeg
--a----         3/23/2026   4:05 PM         156022 2.jpeg
--a----         3/23/2026   4:06 PM         165820 3.jpeg
--a----         3/25/2026   8:38 AM         231381 34bdb9f7-c8e5-4e4d-9a4c-aed7071e4390.jpg
--a----         3/25/2026   8:38 AM         156022 e80ee277-cd03-42d7-a989-662cd28c3a34.jpg
-
-
-PS C:\Users\aa\Pictures\website> ls moldbox
-
-
-    Directory: C:\Users\aa\Pictures\website\moldbox
-
-
-Mode                 LastWriteTime         Length Name
-----                 -------------         ------ ----
--a----         3/23/2026   3:56 PM         217054 moldbox_with_core.jpeg
--a----         3/25/2026   8:49 AM        9766580 molding_process_1.mp4
--a----         3/25/2026   8:49 AM       16410456 molding_process_2.mp4
-
-
-PS C:\Users\aa\Pictures\website> ls molding_line
-
-
-    Directory: C:\Users\aa\Pictures\website\molding_line
-
-
-Mode                 LastWriteTime         Length Name
-----                 -------------         ------ ----
--a----         3/25/2026   8:37 AM         222756 804438f1-ad2c-4d95-9a73-86a035cc14b9.jpg
--a----         3/25/2026   8:38 AM         222617 fd2c86d7-4680-451d-afe0-1210222d2133.jpg
-
-
-PS C:\Users\aa\Pictures\website> ls other
-
-
-    Directory: C:\Users\aa\Pictures\website\other
-
-
-Mode                 LastWriteTime         Length Name
-----                 -------------         ------ ----
--a----         3/25/2026   8:39 AM         196420 27b47e51-eaa6-4ea5-bd1e-8e146c39cdf3.jpg
--a----         3/25/2026   8:39 AM         230656 57abafa6-d835-414f-bc57-8fbf7740f909.jpg
--a----         3/25/2026   8:39 AM         238954 c9348b9e-f923-42d5-a57d-bce47cc16d2d.jpg
--a----         3/23/2026   4:06 PM         196420 casting_hanging.jpeg
--a----         3/23/2026   4:06 PM         238954 csating_hanging_2.jpeg
-
-
-PS C:\Users\aa\Pictures\website> ls paint_shop
-
-
-    Directory: C:\Users\aa\Pictures\website\paint_shop
-
-
-Mode                 LastWriteTime         Length Name
-----                 -------------         ------ ----
--a----         3/25/2026   8:36 AM         128590 0b83ca38-e603-45c2-b379-a65cfd53dbd2.jpg
--a----         3/25/2026   8:36 AM         184497 17fea983-9f6f-4499-b28f-0124bd349ee9.jpg
--a----         3/25/2026   8:37 AM         133941 21c23c95-bbe5-489b-af0c-17847f32ae10.jpg
--a----         3/25/2026   8:36 AM         153021 23238dec-bd6f-45f7-918d-f577ea413946.jpg
--a----         3/25/2026   8:37 AM         170808 354467de-d770-4d97-b8bd-6b3a0ce6a967.jpg
--a----         3/25/2026   8:37 AM         150230 ba04a35f-6783-4dad-836f-8a2d7b29f3d6.jpg
--a----         3/25/2026   8:36 AM         132619 d37cb9c9-a85a-4a93-8c83-af2ecd41417e.jpg
--a----         3/25/2026   8:36 AM         142382 e23fdfbd-566d-4ab1-bdf9-7971afd654a4.jpg
-
-
-PS C:\Users\aa\Pictures\website> ls pouring
-
-
-    Directory: C:\Users\aa\Pictures\website\pouring
-
-
-Mode                 LastWriteTime         Length Name
-----                 -------------         ------ ----
--a----         3/25/2026   8:38 AM         208620 47d80254-4ea3-4757-9dfe-b9ce9c3b9142.jpg
--a----         3/25/2026   8:38 AM         209524 5d128ff1-8409-4a1a-9364-b9a7047335c9.jpg
--a----         3/23/2026   3:51 PM         159108 70345.jpeg
--a----         3/23/2026   3:51 PM        9726329 70349.mp4
--a----         3/23/2026   3:51 PM         339234 70358.jpeg
--a----         3/23/2026   3:52 PM         286658 70361.jpeg
--a----         3/23/2026   3:51 PM         289719 70363.jpeg
--a----         3/23/2026   3:50 PM        9309847 70364.mp4
--a----         3/23/2026   3:50 PM         169589 70369.jpeg
--a----         3/23/2026   3:50 PM         143895 70370.jpeg
--a----         3/25/2026   8:39 AM         172025 9cb6956e-4159-44fa-a2e3-13284fe88e73.jpg
--a----         3/25/2026   8:39 AM         200111 d9b7e638-e610-4e40-b974-ac61c60e94d0.jpg
-
-
-PS C:\Users\aa\Pictures\website> ls pouring_line
-
-
-    Directory: C:\Users\aa\Pictures\website\pouring_line
-
-
-Mode                 LastWriteTime         Length Name
-----                 -------------         ------ ----
--a----         3/23/2026   4:05 PM         222756 1.jpeg
--a----         3/23/2026   4:05 PM         222617 2.jpeg
--a----         3/23/2026   4:05 PM         208620 3.jpeg
--a----         3/23/2026   4:05 PM         209524 4.jpeg
--a----         3/23/2026   4:06 PM         172025 5.jpeg
--a----         3/23/2026   4:06 PM         200111 6.jpeg
--a----         3/23/2026   4:06 PM         230656 7.jpeg
--a----         3/23/2026   3:51 PM         362874 70328.jpeg
--a----         3/25/2026   8:39 AM         165820 b8bf61b6-4763-48f8-be83-00a64ea029c7.jpg
-
-
-PS C:\Users\aa\Pictures\website> ls pre-heat-treatment
-
-
-    Directory: C:\Users\aa\Pictures\website\pre-heat-treatment
-
-
-Mode                 LastWriteTime         Length Name
-----                 -------------         ------ ----
--a----         3/23/2026   3:51 PM       11106472 70334.mp4
--a----         3/23/2026   3:51 PM         218947 70335.jpeg
--a----         3/23/2026   3:51 PM         224673 70336.jpeg
-
-
-PS C:\Users\aa\Pictures\website> ls  product
-
-
-    Directory: C:\Users\aa\Pictures\website\product
-
-
-Mode                 LastWriteTime         Length Name
-----                 -------------         ------ ----
--a----         3/23/2026   3:56 PM         252944 1.jpeg
--a----         3/23/2026   4:03 PM         255084 10.jpeg
--a----         3/23/2026   4:03 PM         155282 11.jpeg
--a----         3/23/2026   4:03 PM         210987 12.jpeg
--a----         3/23/2026   4:03 PM         225998 13.jpeg
--a----         3/23/2026   4:03 PM         178591 14.jpeg
--a----         3/23/2026   4:03 PM         112824 15.jpeg
--a----         3/23/2026   4:03 PM         143276 16.jpeg
--a----         3/23/2026   4:03 PM         156733 17.jpeg
--a----         3/23/2026   4:03 PM         176717 18.jpeg
--a----         3/23/2026   4:04 PM         154496 19.jpeg
--a----         3/23/2026   3:59 PM         107803 2.jpeg
--a----         3/23/2026   4:04 PM         156733 20.jpeg
--a----         3/23/2026   4:04 PM         176717 21.jpeg
--a----         3/23/2026   4:03 PM         154496 22.jpeg
--a----         3/23/2026   4:03 PM         190534 23.jpeg
--a----         3/23/2026   4:04 PM         133895 24.jpeg
--a----         3/23/2026   4:04 PM         206426 25.jpeg
--a----         3/23/2026   4:03 PM         206426 26.jpeg
--a----         3/23/2026   4:04 PM         220238 27.jpeg
--a----         3/23/2026   4:04 PM         187575 28.jpeg
--a----         3/23/2026   4:04 PM         152264 29.jpeg
--a----         3/23/2026   4:03 PM         189190 3.jpeg
--a----         3/23/2026   4:04 PM         174877 30.jpeg
--a----         3/23/2026   4:05 PM         145563 31.jpeg
--a----         3/23/2026   4:05 PM          68711 32.jpeg
--a----         3/23/2026   4:04 PM         195348 33.jpeg
--a----         3/23/2026   4:05 PM          81592 34.jpeg
--a----         3/23/2026   4:05 PM         106440 35.jpeg
--a----         3/23/2026   4:03 PM         242027 4.jpeg
--a----         3/23/2026   4:03 PM         142522 5.jpeg
--a----         3/23/2026   4:03 PM         180971 6.jpeg
--a----         3/23/2026   4:03 PM         246564 7.jpeg
--a----         3/23/2026   4:03 PM         253933 8.jpeg
--a----         3/23/2026   4:03 PM         174918 9.jpeg
-
-
-PS C:\Users\aa\Pictures\website> ls scrape
-
-
-    Directory: C:\Users\aa\Pictures\website\scrape
-
-
-Mode                 LastWriteTime         Length Name
-----                 -------------         ------ ----
--a----         3/25/2026   8:38 AM         204568 88ff8f59-a499-42c2-b79d-4f60d29dc64f.jpg
-
-
-PS C:\Users\aa\Pictures\website> ls shot_blasting
-
-
-    Directory: C:\Users\aa\Pictures\website\shot_blasting
-
-
-Mode                 LastWriteTime         Length Name
-----                 -------------         ------ ----
--a----         3/23/2026   4:05 PM         201543 2.jpeg
--a----         3/25/2026   8:38 AM         201543 64a08d62-a58b-437d-9916-6e2c5e1d509e.jpg
--a----         3/23/2026   3:51 PM         379140 70331.jpeg
-
-
-PS C:\Users\aa\Pictures\website>, gitbash=[aa@Admin MINGW64 ~/Pictures/website (main)
-$ ls
-A_LINKS.txt  fettling_machine/  melting/  molding_line/  paint_shop/  plant.jpeg  pouring_line/        product/  shot_blasting/
-core_shop/   machine_shop/      moldbox/  other/         plan2.jpeg   pouring/    pre-heat-treatment/  scrape/
+$ ls -R
+.:
+A_LINKS.txt        moldbox/       plant.jpeg           scrape/
+core_shop/         molding_line/  pouring/             shot_blasting/
+fettling_machine/  other/         pouring_line/
+machine_shop/      paint_shop/    pre-heat-treatment/
+melting/           plan2.jpeg     product/
+
+./core_shop:
+153f0def-6ab2-481a-9708-4a5ef8003c12.jpg  core_shop1.jpeg  core_shop_owen.jpeg
+b5edc6c5-cfb6-4678-8e45-4f4d6aa85951.jpg  core_shop2.jpeg
+c40908b3-dd26-4fa3-b3f9-380adb3893f5.jpg  core_shop3.jpeg
+
+./fettling_machine:
+machin1.jpeg  machine2.jpeg  v1.mp4  v2.mp4  v3.mp4  v4.mp4
+
+./machine_shop:
+70375.jpeg  70377.jpeg                   Doosan_DNM_500_II_.mp4
+70376.jpeg  Cast_iron_face_on_lathe.mp4  shaping_cast_iron_by_cnc.mp4
+
+./melting:
+1.jpeg  34bdb9f7-c8e5-4e4d-9a4c-aed7071e4390.jpg
+2.jpeg  e80ee277-cd03-42d7-a989-662cd28c3a34.jpg
+3.jpeg
+
+./moldbox:
+moldbox_with_core.jpeg  molding_process_1.mp4  molding_process_2.mp4
+
+./molding_line:
+804438f1-ad2c-4d95-9a73-86a035cc14b9.jpg
+fd2c86d7-4680-451d-afe0-1210222d2133.jpg
+
+./other:
+27b47e51-eaa6-4ea5-bd1e-8e146c39cdf3.jpg  casting_hanging.jpeg
+57abafa6-d835-414f-bc57-8fbf7740f909.jpg  csating_hanging_2.jpeg
+c9348b9e-f923-42d5-a57d-bce47cc16d2d.jpg
+
+./paint_shop:
+0b83ca38-e603-45c2-b379-a65cfd53dbd2.jpg
+17fea983-9f6f-4499-b28f-0124bd349ee9.jpg
+21c23c95-bbe5-489b-af0c-17847f32ae10.jpg
+23238dec-bd6f-45f7-918d-f577ea413946.jpg
+354467de-d770-4d97-b8bd-6b3a0ce6a967.jpg
+ba04a35f-6783-4dad-836f-8a2d7b29f3d6.jpg
+d37cb9c9-a85a-4a93-8c83-af2ecd41417e.jpg
+e23fdfbd-566d-4ab1-bdf9-7971afd654a4.jpg
+
+./pouring:
+47d80254-4ea3-4757-9dfe-b9ce9c3b9142.jpg
+5d128ff1-8409-4a1a-9364-b9a7047335c9.jpg
+70345.jpeg
+70349.mp4
+70358.jpeg
+70361.jpeg
+70363.jpeg
+70364.mp4
+70369.jpeg
+70370.jpeg
+9cb6956e-4159-44fa-a2e3-13284fe88e73.jpg
+d9b7e638-e610-4e40-b974-ac61c60e94d0.jpg
+
+./pouring_line:
+1.jpeg  3.jpeg  5.jpeg  7.jpeg      b8bf61b6-4763-48f8-be83-00a64ea029c7.jpg
+2.jpeg  4.jpeg  6.jpeg  70328.jpeg
+
+./pre-heat-treatment:
+70334.mp4  70335.jpeg  70336.jpeg
+
+./product:
+1.jpeg   13.jpeg  17.jpeg  20.jpeg  24.jpeg  28.jpeg  31.jpeg  35.jpeg  7.jpeg
+10.jpeg  14.jpeg  18.jpeg  21.jpeg  25.jpeg  29.jpeg  32.jpeg  4.jpeg   8.jpeg
+11.jpeg  15.jpeg  19.jpeg  22.jpeg  26.jpeg  3.jpeg   33.jpeg  5.jpeg   9.jpeg
+12.jpeg  16.jpeg  2.jpeg   23.jpeg  27.jpeg  30.jpeg  34.jpeg  6.jpeg
+
+./scrape:
+88ff8f59-a499-42c2-b79d-4f60d29dc64f.jpg
+
+./shot_blasting:
+2.jpeg  64a08d62-a58b-437d-9916-6e2c5e1d509e.jpg  70331.jpeg
 
 aa@Admin MINGW64 ~/Pictures/website (main)
-$
-] git repository=[https://github.com/AcumeltPvtLtd/website_images_and_media] , , }]"
-
-Step-by-Step Execution Protocol:
-
-Phase 1: Analysis & Purification (Based on Information Theory and Logic)
-
-Signal-to-Noise Ratio (SNR) and Entropy Reduction: Process the content found in USER_PROBLEM_INPUT. Apply SNR analysis to strip away all irrelevant noise, emotional context, and filler words. Then, perform Entropy Reduction by replacing vague natural language with precise, deterministic, and domain-specific terminology.
-
-Variable Isolation: From the purified content of USER_PROBLEM_INPUT, categorize the information into three key variables:
-
-x: The specific Goal or desired outcome.
-
-y: All Constraints or limitations (e.g., length, format, scope, negative constraints).
-
-z: The Context or specific domain (e.g., coding, scientific analysis, troubleshooting).
-
-Bayesian Inference (Clarification Check): If any of the variables (x, y, or z) extracted from USER_PROBLEM_INPUT are ambiguous or missing, halt the process. Ask the user a clarifying question to update your understanding (priors) before generating the final prompt.
-
-Phase 2: Prompt Construction (Based on Structural Logic)
-
-First Principles Thinking & Algorithmic Decomposition: Deconstruct the core problem (x) to its fundamental components. Then, apply Algorithmic Decomposition to break the solution into a "Chain of Thought" sequence. This sequence must be MECE (Mutually Exclusive, Collectively Exhaustive), ensuring each instruction is distinct and all necessary steps are included.
-
-Minimax Strategy: Analyze the proposed prompt structure for potential misinterpretations or "worst-case scenarios" a target AI might encounter. Add specific "negative constraints" to prevent common errors, hallucinations, or lazy reasoning.
-
-Recursion: Ensure the prompt structure incorporates a recursive element. The execution of each step (n) must depend on the successful verification of the preceding step (n-1), preventing error cascading.
-
-Output Generation Format:
-
-Final Output: Your response must only be the optimized prompt.
-
-Adherence to Occam’s Razor and Pareto Efficiency: The final prompt must be a single block of text, optimized for both brevity (token efficiency) and maximum accuracy (Pareto Efficiency). Do not include any meta-commentary, explanations, or analysis of your thought process. Present the prompt as the direct solution to the user's problem, ready for immediate use.
