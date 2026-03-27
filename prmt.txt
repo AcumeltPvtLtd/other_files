@@ -1,9 +1,16 @@
 .:
-7.jpeg                                    De-gating/                  fume-extraction-image-01.webp  other/       quality/
-70328.jpeg                                Quality_machine_shop/       heat_treatment/                paint_shop/  sand_plant/
-7a7cdede-0390-47a3-ba11-0810ddedd530.jpg  core_shop/                  machine_shop/                  plan2.jpeg   shot_blasting/
-8fb9cfdf-a0b6-4fa9-994f-f559ed9d4309.jpg  dust-extraction-image.webp  melting/                       pouring/     store/
-A_LINKS.txt                               fettling_machine/           molding_line/                  product/
+7.jpeg                                    machine_shop/
+70328.jpeg                                melting/
+7a7cdede-0390-47a3-ba11-0810ddedd530.jpg  molding_line/
+8fb9cfdf-a0b6-4fa9-994f-f559ed9d4309.jpg  other/
+A_LINKS.txt                               paint_shop/
+De-gating/                                plant2.jpeg
+Quality_machine_shop/                     pouring/
+core_shop/                                product/
+dust-extraction-image.webp                quality/
+fettling_machine/                         sand_plant/
+fume-extraction-image-01.webp             shot_blasting/
+heat_treatment/                           store/
 
 ./De-gating:
  22.webp  'WhatsApp_Video 2026-03-25 at 3.17.02 PM.mp4'   unnamed.webp
@@ -12,8 +19,10 @@ A_LINKS.txt                               fettling_machine/           molding_li
 CMM.png  contour.jpeg  surface_roughness_tester.png
 
 ./core_shop:
-0a620900-ae85-4e74-aa3e-b903c11d1be9.jpg  5a318d83-cb59-4e48-9561-86270e3fbe6a.jpg
-4af6fef2-8af8-4f3d-a7ce-f33671622e1c.jpg  core_shop1.jpeg
+0a620900-ae85-4e74-aa3e-b903c11d1be9.jpg
+4af6fef2-8af8-4f3d-a7ce-f33671622e1c.jpg
+5a318d83-cb59-4e48-9561-86270e3fbe6a.jpg
+core_shop1.jpeg
 
 ./fettling_machine:
 random.mp4  unnamed.webp  v1.mp4
@@ -40,28 +49,43 @@ CNC/  VMC/  VTL/
 'WhatsApp_Video 2026-03-25 at 3.16.10 PM.mp4'   molding-image-1-1024x906.webp
 
 ./other:
-27b47e51-eaa6-4ea5-bd1e-8e146c39cdf3.jpg  c9348b9e-f923-42d5-a57d-bce47cc16d2d.jpg  csating_hanging_2.jpeg
-57abafa6-d835-414f-bc57-8fbf7740f909.jpg  casting_hanging.jpeg
+27b47e51-eaa6-4ea5-bd1e-8e146c39cdf3.jpg  casting_hanging.jpeg
+57abafa6-d835-414f-bc57-8fbf7740f909.jpg  csating_hanging_2.jpeg
+c9348b9e-f923-42d5-a57d-bce47cc16d2d.jpg
 
 ./paint_shop:
-0b83ca38-e603-45c2-b379-a65cfd53dbd2.jpg  23238dec-bd6f-45f7-918d-f577ea413946.jpg  d37cb9c9-a85a-4a93-8c83-af2ecd41417e.jpg
-17fea983-9f6f-4499-b28f-0124bd349ee9.jpg  354467de-d770-4d97-b8bd-6b3a0ce6a967.jpg  e23fdfbd-566d-4ab1-bdf9-7971afd654a4.jpg
-21c23c95-bbe5-489b-af0c-17847f32ae10.jpg  ba04a35f-6783-4dad-836f-8a2d7b29f3d6.jpg
+0b83ca38-e603-45c2-b379-a65cfd53dbd2.jpg
+17fea983-9f6f-4499-b28f-0124bd349ee9.jpg
+21c23c95-bbe5-489b-af0c-17847f32ae10.jpg
+23238dec-bd6f-45f7-918d-f577ea413946.jpg
+354467de-d770-4d97-b8bd-6b3a0ce6a967.jpg
+ba04a35f-6783-4dad-836f-8a2d7b29f3d6.jpg
+d37cb9c9-a85a-4a93-8c83-af2ecd41417e.jpg
+e23fdfbd-566d-4ab1-bdf9-7971afd654a4.jpg
 
 ./pouring:
-1.jpeg                                    70349.mp4                                 d9b7e638-e610-4e40-b974-ac61c60e94d0.jpg
-3.jpeg                                    70358.jpeg                                fd2c86d7-4680-451d-afe0-1210222d2133.jpg
-47d80254-4ea3-4757-9dfe-b9ce9c3b9142.jpg  70370.jpeg                                pauring-system-image-1-768x679.webp
-6.jpeg                                    804438f1-ad2c-4d95-9a73-86a035cc14b9.jpg
+1.jpeg
+3.jpeg
+47d80254-4ea3-4757-9dfe-b9ce9c3b9142.jpg
+6.jpeg
+70349.mp4
+70358.jpeg
+70370.jpeg
+804438f1-ad2c-4d95-9a73-86a035cc14b9.jpg
+d9b7e638-e610-4e40-b974-ac61c60e94d0.jpg
+fd2c86d7-4680-451d-afe0-1210222d2133.jpg
+pauring-system-image-1-768x679.webp
 
 ./product:
-1.jpeg   12.jpeg  15.jpeg  18.jpeg  20.jpeg  23.jpeg  26.jpeg  29.jpeg  31.jpeg  34.jpeg  5.jpeg  8.jpeg
-10.jpeg  13.jpeg  16.jpeg  19.jpeg  21.jpeg  24.jpeg  27.jpeg  3.jpeg   32.jpeg  35.jpeg  6.jpeg  9.jpeg
-11.jpeg  14.jpeg  17.jpeg  2.jpeg   22.jpeg  25.jpeg  28.jpeg  30.jpeg  33.jpeg  4.jpeg   7.jpeg
+1.jpeg   13.jpeg  17.jpeg  20.jpeg  24.jpeg  28.jpeg  31.jpeg  35.jpeg  7.jpeg
+10.jpeg  14.jpeg  18.jpeg  21.jpeg  25.jpeg  29.jpeg  32.jpeg  4.jpeg   8.jpeg
+11.jpeg  15.jpeg  19.jpeg  22.jpeg  26.jpeg  3.jpeg   33.jpeg  5.jpeg   9.jpeg
+12.jpeg  16.jpeg  2.jpeg   23.jpeg  27.jpeg  30.jpeg  34.jpeg  6.jpeg
 
 ./quality:
-Hardness_testing.png  UTS_Tensile.webp               micro.jpg                spectro.jpg
-MPI.jpg               izod-charpy-impact-tester.jpg  sand-testing-image.webp  ultrasonic_testing.jpg
+Hardness_testing.png  izod-charpy-impact-tester.jpg  spectro.jpg
+MPI.jpg               micro.jpg                      ultrasonic_testing.jpg
+UTS_Tensile.webp      sand-testing-image.webp
 
 ./sand_plant:
 Sand-plant-image-1-768x679.webp
@@ -70,7 +94,9 @@ Sand-plant-image-1-768x679.webp
 67d0a815-d9c4-45ef-9d2d-f2e1ee0e714b.jpg  70331.jpeg  shot_blasting.jpg
 
 ./store:
-028388da-c339-473a-b6eb-e26d2187b24c.jpg  8276a12f-8600-478d-91ff-714dda5e82e4.jpg
+028388da-c339-473a-b6eb-e26d2187b24c.jpg
+8276a12f-8600-478d-91ff-714dda5e82e4.jpg
 
 aa@Admin MINGW64 ~/Pictures/website (main)
 $
+
